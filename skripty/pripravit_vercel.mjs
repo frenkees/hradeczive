@@ -26,12 +26,27 @@ const fix = (o) => {
 fix(t);
 writeFileSync(join(OUT, 'tiles.json'), JSON.stringify(t));
 
+// serverové funkce Vercelu (skripty/vercel_api/*.js -> api/): zápasy FC Hradec Králové pro Malšovickou arénu
+const API = join(ROOT, 'skripty', 'vercel_api');
+if (existsSync(API)) {
+  mkdirSync(join(OUT, 'api'), { recursive: true });
+  for (const e of readdirSync(API)) if (e.endsWith('.js')) cpSync(join(API, e), join(OUT, 'api', e));
+  writeFileSync(join(OUT, 'package.json'), JSON.stringify({ private: true, type: 'module' }, null, 2));
+}
+// statická záloha rozpisu zápasů (když funkce neodpoví)
+try {
+  const { nactiZapasy } = await import('./vercel_api/zapasy.js');
+  const d = await nactiZapasy(); d.staticky = true;
+  writeFileSync(join(OUT, 'zapasy.json'), JSON.stringify(d));
+} catch (e) { console.warn('zapasy.json se nepodařilo stáhnout:', e.message); }
+
 // hlavičky: tiles.json a index se ověřují vždy, data s ?v= se smí cachovat
 writeFileSync(join(OUT, 'vercel.json'), JSON.stringify({
   cleanUrls: false,
   headers: [
     { source: '/(tiles.json|index.html|)', headers: [{ key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' }] },
     { source: '/(overlay|preview|stromy)/(.*)', headers: [{ key: 'Cache-Control', value: 'public, max-age=3600' }] },
+    { source: '/zapasy.json', headers: [{ key: 'Cache-Control', value: 'public, max-age=600' }] },
   ],
 }, null, 2));
 console.log(`nasazeni/vercel připraveno, přepsáno ${n} adres dlaždic na ${R2}`);

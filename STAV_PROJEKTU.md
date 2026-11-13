@@ -51,6 +51,33 @@ Celá mapa se překreslí až po nasbírání víc změn (`sh ./postav.sh render
 Ověřuje se jen výřez dotčeného místa (`prep.py` čtverce + `skripty/nahled_mista.py`, náhledy v `izomapa/preview/`).
 - Silnice pod mostovkami (viz Most níže) – ověřeno na mostě 50.21954, 15.81119 a Pražském mostě (`preview/mosty/`).
   Scény čtverců 0,0 a −1,1 už jsou přepočítané.
+- **Křižovatka Mileta po přestavbě** (2026-11-13, nejvyšší priorita) – scéna čtverce 0,0 přepočítaná, ověřeno výřezem
+  (`preview/mileta/`). Po renderu ještě `overlay.py` (klikací „Křižovatka Mileta“ a nový text arény).
+- **Malšovická aréna – nový model** (`malsovicka_arena` v `custom_models.js`), čtverec 0,0 (stačí render, prep netřeba).
+
+## Přestavby, které pasport magistrátu ještě nemá
+
+`assets/prestavby.json` = zóny (`zona` [[lat, lon]…]) s aktuálním OSM (`skripty/prestavby_osm.py`, z `izomapa/`, bere API OSM).
+V zóně hook `custom_prep.py` nepoužije pasport komunikací, zeleně, značení, stání, zábradlí ani lamp a nakreslí vozovky
+podle OSM (šířka z pruhů, dělicí čáry pruhů, ostrůvky z `area:highway`, zebry z uzlů `crossing`); podchody (tunely) vynechá.
+- **Křižovatka Mileta** (ŘSD 2024 – 10/2026, provoz od konce dubna 2026): bypassy, přímá třída E. Beneše, malá Mileta,
+  oblouk k nemocnici. 4 podchody jako model `mileta_podchody` (dominanta „Křižovatka Mileta“): portály se světlem,
+  rampy se zídkami a zábradlím podle OSM („Podchod 1–4“, v OSM `fixme: resurvey after construction`).
+  Terén má krok 5 m, rampa se do něj zahloubit nedá – zářez naznačuje tmavnoucí podlaha. **Ověřit proti skutečnosti / fotkám.**
+- Další kandidát: kruhový objezd Komenského (50.2078, 15.8325) – přidat zónu do `prestavby.json` a pustit `prestavby_osm.py`.
+
+## Malšovická aréna (FINEP Arena) a zápasy FC Hradec Králové
+
+- Model v dlaždicích: zaoblené tribuny 140 × 100 m, lamelová fasáda, membránová střecha s příhradovinami, budova hlavní tribuny
+  s nápisem, obrazovka u severní tribuny, 4 lízátka se vzpěrou a terčem 11 m (podle ortofota a fotek z Commons).
+- Animovaná vrstva `assets/custom_web.js` (obecný háček `window.IZOMAPA_PLUGINS` ve `web/app.html`, `build_html.py`
+  ho kopíruje do `site/`): v noci RGB LED pás po obvodu fasády, při domácím zápase (75 min před výkopem do konce) svítí
+  lízátka a hřiště, na obrazovce skóre / příští zápas, nad arénou popisek, v kartě arény rozpis domácích zápasů a výsledky.
+- Data: Vercel funkce `/api/zapasy` (`skripty/vercel_api/zapasy.js` – rozpis z fchk.cz/matches/MUZ, při zápase skóre
+  a fáze z onlajny.com; cache 30 s při zápase, jinak 10 min), záloha statický `zapasy.json` (`node skripty/zapasy.mjs`,
+  `pripravit_vercel.mjs` ho vyrobí i s funkcí). Parser závisí na HTML fchk.cz – když se web klubu změní, rozpis zmizí.
+- Podmínky užití dat fchk.cz / onlajny.com nejsou známé – zeptat se klubu, případně uvést zdroj v patičce.
+- Ještě není: hráči na hřišti a fanoušci na tribunách, zimní stadion.
 
 ## Otevřené úkoly
 
@@ -96,8 +123,8 @@ Odkazy jsou na živou mapu (`#leto@lat,lon,zoom`); hradeczive.vercel.app funguje
 - [ ] **Zákaz parkování** aut na kruhových objezdech, u křižovatek a na městském okruhu (zákazy stání v datech jsou,
       ale nejspíš zbytečná složitost – stačí jednoduchá pravidla).
 - [ ] **Autobusový terminál MHD**: před terminálem parkují autobusy vedle sebe v desítkách řad (linkové i dálkové) – vykreslit.
-- [ ] **Malšovická aréna** https://izohradec.vercel.app/#leto@50.20609,15.84415,0.57 – malý text „další zápas: datum a čas“;
-      při probíhajícím zápase svítí „lízátka“, na hřišti běhají hráči a na tribunách fandí lidé; po kliknutí pop-up s rozpisem zápasů.
+- [x] **Malšovická aréna** – popisek s dalším zápasem, lízátka při zápase, pop-up s rozpisem (2026-11-13, viz výše).
+- [ ] Aréna: na hřišti běhají hráči a na tribunách fandí lidé (při zápase).
 - [ ] **Zimní stadion**: po kliknutí pop-up s dalšími zápasy (datum, čas, kdo s kým).
 
 ### Větší projekt: fotografie budov od lidí
