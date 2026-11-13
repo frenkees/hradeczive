@@ -79,6 +79,20 @@ podle OSM (šířka z pruhů, dělicí čáry pruhů, ostrůvky z `area:highway`
 - Podmínky užití dat fchk.cz / onlajny.com nejsou známé – zeptat se klubu, případně uvést zdroj v patičce.
 - Ještě není: hráči na hřišti a fanoušci na tribunách, zimní stadion.
 
+## Trasy MHD
+
+GTFS DPMHK nemá tvary tras, `mhd.py` je počítá po silnicích (`road_route.py`), ale vede je přednostně po referenčních trasách:
+`assets/mhd_trasy_ref.json` (`skripty/mhd_trasy_ref.py`, z `izomapa/`): relace linek DPMHK z OSM (43, všechny linky kromě nočních),
+mapa linek magistrátu (ArcGIS `thematic/mhd_linky`, zjednodušená, bez linek 4 a 21 a bez variant Š/R – jen kontrola a rozhodčí)
+a polohy zastávek z OSM (CIS JŘ má jednu souřadnici na název – vybere se stejnojmenná zastávka na trase linky).
+Hrany na koridoru OSM jsou 0,3× levnější, podél městské čáry 0,65×; ruční průjezdní čáry `assets/mhd_trasy_rucne.json`
+(`[{"linka": "12", "pres": [[lat, lon], …]}]`) 0,1×. Do grafu patří i pěší zóna s povoleným vjezdem bus/trolejbus (Riegrovo nám.).
+Kvalita každého úseku mezi zastávkami (`kvalita` v mhd.json): jistý / jen OSM / jen město / rozpor / nejistý / mimo mapu.
+Stav 2026-11-13 (úseky v mapě): 3 265 jistých, 265 jen město (hlavně noční linky), 62 jen OSM, 9 rozporů, 135 nejistých –
+nejvíc linky 15, 10, 19, 27, 9 a školní/zkrácené varianty (Š, R), které v OSM nejsou.
+Kontrola: `python ../skripty/mhd_trasy_kontrola.py` -> `izomapa/preview/mhd_trasy/index.html` (obrázek na linku).
+Po změně tras stačí `mhd.py`, `build_html.py` a nasazení (bez renderu).
+
 ## Otevřené úkoly
 
 - [ ] **Licence dat magistrátu**: nikde výslovně uvedená; zdroj je v patičce, ale je dobré poslat magistrátu dotaz / žádost o souhlas.
@@ -102,9 +116,9 @@ Odkazy jsou na živou mapu (`#leto@lat,lon,zoom`); hradeczive.vercel.app funguje
 ### Střední priorita
 - [ ] **Zastávky MHD**: stáhnout zastávky (GTFS DPMHK `stops.txt`), možnost je na mapě zvýraznit; po kliknutí pop-up
       s odjezdy na příští hodinu (linka, směr, čas).
-- [ ] **Trasa linky po kliknutí na vozidlo MHD**: překreslit barevnou čáru po celé trase linky. Trasy **důkladně ověřit**
-      (kterými ulicemi linka opravdu jede); kde k další zastávce vede víc možných ulic, trasu **nepočítat automaticky**
-      (GTFS nemá `shapes.txt`) – ruční/ověřené trasy (např. z pasportu, jízdních řádů DPMHK, OSM relací route=bus/trolleybus).
+- [x] **Trasa linky po kliknutí na vozidlo MHD** (2026-11-13): klik nakreslí trasu spoje (projetá část tlumená, zastávky
+      s časy, nejisté úseky čárkovaně), zůstane i při oddálení, tlačítko „Celá trasa“, × ji skryje. Trasy viz „Trasy MHD“ níže.
+      **Zbývá projít nejisté úseky** (`izomapa/preview/mhd_trasy/index.html`) a opravit je ručně.
 - [x] **Most** https://izohradec.vercel.app/#leto@50.21954,15.81119,0.33 – silnice nakreslená i pod mostovkou (2026-11-13):
       byla to plocha vozovky/chodníku z pasportu magistrátu; `custom_prep.py` (krok 5b) pod mostovkou výš než 1 m nad terénem
       vrací povrch z OSM (koleje, voda, tráva, silnice pod mostem). Platí pro všechny mosty. **Čeká na překreslení.**
