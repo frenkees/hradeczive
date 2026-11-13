@@ -79,8 +79,12 @@ Odkazy jsou na živou mapu (`#leto@lat,lon,zoom`); hradeczive.vercel.app funguje
       provedení; najít volně licencované foto (Wikimedia Commons) a udělat vlastní model (`custom_models.js`).
 
 ### Nízká priorita
-- [ ] **Směr provozu na víceproudých silnicích** (hlavně městský okruh): auta v pruzích podle směru jízdy; ideálně
-      rozpoznat jednosměrné ulice a řídit dopravu podle nich.
+- [x] **Směr provozu na víceproudých silnicích** (2026-11-13): auta jednosměrky dodržovala už dřív; nově počet pruhů
+      z OSM (`nastroje/pruhy.py` → `assets/pruhy.json`, 589 cest / 56 km), na 2–4pruhovém pásu jedou auta vedle sebe
+      (nákladní vpravo) a plynule mění pruh. Trasy MHD (`road_route.py`) dřív jednosměrky ignorovaly – na rozděleném
+      okruhu jezdily autobusy po obou pásech oběma směry (~48 % vzorků proti směru); teď dodržují jednosměrky
+      i kruhové objezdy (zbývá ~1 % = pár metrů u křižovatek). Po změně dopravy stačí `prep.py` (nebo jen graf silnic),
+      `overlay.py`, `mhd.py`, `build_html.py` – bez renderu.
 - [ ] **Zákaz parkování** aut na kruhových objezdech, u křižovatek a na městském okruhu (zákazy stání v datech jsou,
       ale nejspíš zbytečná složitost – stačí jednoduchá pravidla).
 - [ ] **Autobusový terminál MHD**: před terminálem parkují autobusy vedle sebe v desítkách řad (linkové i dálkové) – vykreslit.
