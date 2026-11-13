@@ -99,8 +99,10 @@ Odkazy jsou na živou mapu (`#leto@lat,lon,zoom`); hradeczive.vercel.app funguje
 
 ## Git
 
-- `izohradec/` – projektový repozitář (skripty, dokumentace, konfigurace nasazení; bez tajemství, dlaždic a stažených dat).
+- `izohradec/` – projektový repozitář (skripty, dokumentace, konfigurace nasazení; bez tajemství, dlaždic a stažených dat),
+  soukromá záloha na GitHubu **frenkees/hradeczive** (remote `origin`, větev `main`).
 - `izomapa/` – klon `adamklatovsky/izomapa`; vlastní úpravy na lokální větvi **`hradec`** (sdílený kód i městské soubory,
-  které upstream `.gitignore` vynechává – přidané přes `git add -f`). Na upstream nepushovat.
+  které upstream `.gitignore` vynechává – přidané přes `git add -f`). Soukromá záloha **frenkees/hradeczive-izomapa**
+  (remote `zaloha`, větev `hradec`; `git push` jde tam). Remote `origin` = upstream autora – tam nepushovat.
 - Mimo git (vyrobí se znovu): `izomapa/build`, `data*`, `site`, `assets/mmhk.json`, `assets/mmhk_znaceni/`, `nasazeni/vercel`.
 - Tajemství jen lokálně: `nasazeni/tajne.env`, `nasazeni/wedos_kontakt.json`, `.vercel/`.
