@@ -47,13 +47,16 @@ Vše z `izomapa/` v Git Bash, Python `.venv/Scripts/python` s `PYTHONUTF8=1`.
 
 ## Čeká na překreslení (vizuální změny, zatím jen uložené)
 
-Celá mapa se překreslí až po nasbírání víc změn (`sh ./postav.sh render`, pak nahrát dlaždice a nasadit).
-Ověřuje se jen výřez dotčeného místa (`prep.py` čtverce + `skripty/nahled_mista.py`, náhledy v `izomapa/preview/`).
-- Silnice pod mostovkami (viz Most níže) – ověřeno na mostě 50.21954, 15.81119 a Pražském mostě (`preview/mosty/`).
-  Scény čtverců 0,0 a −1,1 už jsou přepočítané.
-- **Křižovatka Mileta po přestavbě** (2026-11-13, nejvyšší priorita) – scéna čtverce 0,0 přepočítaná, ověřeno výřezem
-  (`preview/mileta/`). Po renderu ještě `overlay.py` (klikací „Křižovatka Mileta“ a nový text arény).
-- **Malšovická aréna – nový model** (`malsovicka_arena` v `custom_models.js`), čtverec 0,0 (stačí render, prep netřeba).
+Nic – celá mapa překreslená a nasazená 2026-11-14 (mosty, Mileta, aréna, trasy MHD, funkce /api/zapasy).
+
+## Noční katalog kandidátů na dominanty
+
+`skripty/noc/noc_hlidac.py` (z `izohradec/`) spustí a hlídá `noc_katalog.py`: kandidáti z Wikidat v území mapy (1 406),
+volně licencované fotky z Commons, ortofoto, koncepty „příběhů míst“ z cs Wikipedie (Ollama qwen3:14b, každé číslo
+a citace se ověří proti zdroji, jinak se zahodí), třídění fotek (qwen3-vl:8b). Výstup `izomapa/build/noc/index.html`,
+`katalog.json`, `mista_koncepty.json` (jen KONCEPTY – před použitím ověřit). Pokračuje po pádu (`stav.json`).
+Hlídač: pád / 20 min bez tepu / 40 min na jedné položce -> restart a karanténa položky; víc než 6 restartů za hodinu nebo
+4 bez postupu -> `build/noc/POMOC.txt` (čeká na něj Claude v otevřené session).
 
 ## Přestavby, které pasport magistrátu ještě nemá
 

@@ -67,7 +67,7 @@ export async function nactiZapasy(now = Date.now()) {
   return { stav: new Date(now).toISOString(), zdroj: ROZPIS, zapasy, live };
 }
 
-export default async function handler() {
+export async function GET() {
   try {
     const d = await nactiZapasy();
     const maxAge = d.live && !d.live.konec ? 30 : 600;               // během zápasu čerstvé skóre, jinak cache 10 min
