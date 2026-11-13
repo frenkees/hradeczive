@@ -45,6 +45,13 @@ Vše z `izomapa/` v Git Bash, Python `.venv/Scripts/python` s `PYTHONUTF8=1`.
    - `node skripty/pripravit_vercel.mjs https://pub-55cbad9c2db745779e46b9eac5658b47.r2.dev`
    - `cd nasazeni/vercel && vercel deploy --prod --yes`
 
+## Čeká na překreslení (vizuální změny, zatím jen uložené)
+
+Celá mapa se překreslí až po nasbírání víc změn (`sh ./postav.sh render`, pak nahrát dlaždice a nasadit).
+Ověřuje se jen výřez dotčeného místa (`prep.py` čtverce + `skripty/nahled_mista.py`, náhledy v `izomapa/preview/`).
+- Silnice pod mostovkami (viz Most níže) – ověřeno na mostě 50.21954, 15.81119 a Pražském mostě (`preview/mosty/`).
+  Scény čtverců 0,0 a −1,1 už jsou přepočítané.
+
 ## Otevřené úkoly
 
 - [ ] **Licence dat magistrátu**: nikde výslovně uvedená; zdroj je v patičce, ale je dobré poslat magistrátu dotaz / žádost o souhlas.
@@ -71,8 +78,9 @@ Odkazy jsou na živou mapu (`#leto@lat,lon,zoom`); hradeczive.vercel.app funguje
 - [ ] **Trasa linky po kliknutí na vozidlo MHD**: překreslit barevnou čáru po celé trase linky. Trasy **důkladně ověřit**
       (kterými ulicemi linka opravdu jede); kde k další zastávce vede víc možných ulic, trasu **nepočítat automaticky**
       (GTFS nemá `shapes.txt`) – ruční/ověřené trasy (např. z pasportu, jízdních řádů DPMHK, OSM relací route=bus/trolleybus).
-- [ ] **Most** https://izohradec.vercel.app/#leto@50.21954,15.81119,0.33 – silnice je nakreslená na mostě, ale i na železnici
-      pod mostem (opravit kreslení silnice pod mostovkou).
+- [x] **Most** https://izohradec.vercel.app/#leto@50.21954,15.81119,0.33 – silnice nakreslená i pod mostovkou (2026-11-13):
+      byla to plocha vozovky/chodníku z pasportu magistrátu; `custom_prep.py` (krok 5b) pod mostovkou výš než 1 m nad terénem
+      vrací povrch z OSM (koleje, voda, tráva, silnice pod mostem). Platí pro všechny mosty. **Čeká na překreslení.**
 - [ ] **Podjezd** https://izohradec.vercel.app/#leto@50.21093,15.80850,0.23 – silnice (auta + trolejbusy) vede podjezdem,
       železnice nad ní po mostě v úrovni okolního terénu (teď je to obráceně / špatně).
 - [ ] **Model mostu** https://izohradec.vercel.app/#leto@50.21550,15.90725,0.33 – velký obloukový most v modrobílém
