@@ -1,0 +1,21 @@
+# izomapa je samostatný git (klon upstreamu, větev hradec)
+izomapa/
+
+# tajemství a osobní údaje
+nasazeni/tajne.env
+nasazeni/wedos_kontakt.json
+.env*
+.vercel/
+
+# generované / velké
+nasazeni/vercel/
+nasazeni/*.log
+nasazeni/r2_manifest_*.json
+nasazeni/pilot_mmhk/
+graphify-out/cache/
+node_modules/
+__pycache__/
+
+# podklady a fotky
+podklady/
+porovnani/
