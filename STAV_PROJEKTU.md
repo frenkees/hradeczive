@@ -61,6 +61,42 @@ Vše z `izomapa/` v Git Bash, Python `.venv/Scripts/python` s `PYTHONUTF8=1`.
 - [ ] Letadla (`functions/`) na Vercelu nefungují (vypnuto).
 - [ ] Před zveřejněním fakt projít mapu a příběhy míst proti skutečnosti.
 
+## Nápady a požadavky do budoucna (zadání uživatele 2026-11-13)
+
+Odkazy jsou na živou mapu (`#leto@lat,lon,zoom`); hradeczive.vercel.app funguje stejně.
+
+### Střední priorita
+- [ ] **Zastávky MHD**: stáhnout zastávky (GTFS DPMHK `stops.txt`), možnost je na mapě zvýraznit; po kliknutí pop-up
+      s odjezdy na příští hodinu (linka, směr, čas).
+- [ ] **Trasa linky po kliknutí na vozidlo MHD**: překreslit barevnou čáru po celé trase linky. Trasy **důkladně ověřit**
+      (kterými ulicemi linka opravdu jede); kde k další zastávce vede víc možných ulic, trasu **nepočítat automaticky**
+      (GTFS nemá `shapes.txt`) – ruční/ověřené trasy (např. z pasportu, jízdních řádů DPMHK, OSM relací route=bus/trolleybus).
+- [ ] **Most** https://izohradec.vercel.app/#leto@50.21954,15.81119,0.33 – silnice je nakreslená na mostě, ale i na železnici
+      pod mostem (opravit kreslení silnice pod mostovkou).
+- [ ] **Podjezd** https://izohradec.vercel.app/#leto@50.21093,15.80850,0.23 – silnice (auta + trolejbusy) vede podjezdem,
+      železnice nad ní po mostě v úrovni okolního terénu (teď je to obráceně / špatně).
+- [ ] **Model mostu** https://izohradec.vercel.app/#leto@50.21550,15.90725,0.33 – velký obloukový most v modrobílém
+      provedení; najít volně licencované foto (Wikimedia Commons) a udělat vlastní model (`custom_models.js`).
+
+### Nízká priorita
+- [ ] **Směr provozu na víceproudých silnicích** (hlavně městský okruh): auta v pruzích podle směru jízdy; ideálně
+      rozpoznat jednosměrné ulice a řídit dopravu podle nich.
+- [ ] **Zákaz parkování** aut na kruhových objezdech, u křižovatek a na městském okruhu (zákazy stání v datech jsou,
+      ale nejspíš zbytečná složitost – stačí jednoduchá pravidla).
+- [ ] **Autobusový terminál MHD**: před terminálem parkují autobusy vedle sebe v desítkách řad (linkové i dálkové) – vykreslit.
+- [ ] **Malšovická aréna** https://izohradec.vercel.app/#leto@50.20609,15.84415,0.57 – malý text „další zápas: datum a čas“;
+      při probíhajícím zápase svítí „lízátka“, na hřišti běhají hráči a na tribunách fandí lidé; po kliknutí pop-up s rozpisem zápasů.
+- [ ] **Zimní stadion**: po kliknutí pop-up s dalšími zápasy (datum, čas, kdo s kým).
+
+### Větší projekt: fotografie budov od lidí
+- Klik na budovu → výzva „Pomoz vylepšit tuto budovu“; nahrávání jen po registraci e-mailem.
+- Limity: fotka max. 25 MB, max. 4 fotky na budovu, fotky hned v prohlížeči zmenšit/komprimovat;
+  ochrana proti spamu max. 20 fotek denně na uživatele + celkový denní limit pro všechny.
+- Kontaktní e-mail autora mapy; autor může aktivním uživatelům udělit práva bez limitu.
+- Nahráním uživatel potvrzuje, že je autorem fotek, a souhlasí s jejich bezplatným použitím k vylepšení projektu (jasné upozornění).
+- Potřebuje server (např. Cloudflare Worker + R2 + D1 jako u hlášení nepřesností v `izomapa/hlaseni/`), ověření e-mailu,
+  moderaci a zásady zpracování osobních údajů (GDPR).
+
 ## Git
 
 - `izohradec/` – projektový repozitář (skripty, dokumentace, konfigurace nasazení; bez tajemství, dlaždic a stažených dat).
