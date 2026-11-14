@@ -67,6 +67,14 @@ Poslední celé překreslení a nasazení 2026-11-14 (mosty, Mileta, aréna, tra
   v zóně se cesty ve výstavbě přeskakovaly → na hranici zóny pruh trávy přes silnici. Teď se v zóně kreslí i silnice ve
   výstavbě (`construction=` silniční třída). Náhled `izomapa/preview/mileta/mala_mileta_pred_po.jpg`.
   Bypassy na Miletě: podle města jsou tři (SZ, JZ, JV) a všechny tři v mapě jsou – žádný nechybí.
+- **Estakáda I/31 a skleněný protihlukový tunel** (Okružní, 50.2150, 15.8434; 2026-11-14): dominanta „Estakáda I/31 a skleněný tunel“
+  (`dominanty.json`, model `estakada_i31` v `custom_models.js`): 180 m, zakřivená skleněná stěna přecházející do střechy, žebra
+  po ~2,9 m, hlavní táhla po 23 m s bílými stožáry a táhly k nosníku ve střeše, v noci svítí pásy pod střechou. Osa z OSM
+  (`spec.os`), výška mostovky z dat (`prep.py` → `b['os']`, vyhlazená). Předlohy `izomapa/landmarks_ref/estakada_i31/` (5 fotek z Commons),
+  rozměry (šířka ~19 m, výška ~9 m, stožáry ~13 m) jsou odhad z fotek a ortofota, **ověřit**. Sklo je kvůli renderu neprůhledné.
+  Obecná oprava mostů v `prep.py` (platí pro celé město, **překreslit všechny čtverce**): konec mostu, který leží na jiné silniční
+  mostovce (rozdělená estakáda, sjezd), už nezačíná na terénu, ale ve výšce té mostovky (dlouhé mostovky se zpracují první) –
+  sjezd na Pospíšilovu třídu teď klesá plynule z úrovně estakády. Náhledy `izomapa/preview/estakada_pred.png` / `estakada_po*.png`.
 - Náhledy před/po: `izomapa/preview/mosty/` (pred_/po_ soutok, hucak, aldis). Scény čtverců 0,0 a 0,1 jsou už připravené,
   překreslit je potřeba všechny čtverce (oprava mostů platí pro celé město).
 
@@ -116,6 +124,62 @@ Stav 2026-11-13 (úseky v mapě): 3 265 jistých, 265 jen město (hlavně nočn�
 nejvíc linky 15, 10, 19, 27, 9 a školní/zkrácené varianty (Š, R), které v OSM nejsou.
 Kontrola: `python ../skripty/mhd_trasy_kontrola.py` -> `izomapa/preview/mhd_trasy/index.html` (obrázek na linku).
 Po změně tras stačí `mhd.py`, `build_html.py` a nasazení (bez renderu).
+
+## Návrhy na zrychlení a úklid (analýza 2026-11-14, zatím nic z toho není udělané)
+
+Vychází z grafu graphify, kódu a logů celého překreslení 14. 11. Čtverec 1,1 (339 s; celé město 23 min, 4 čtverce souběžně),
+časy fází odvozené z časů souborů, začátek `prep.py` dopočítaný:
+
+| fáze | čas | podíl |
+|---|---|---|
+| `prep.py` (z toho 4 textury terénu ~26 s) | ~155 s | 46 % |
+| render 5 variant (`render.mjs`) | 43 s | 13 % |
+| `dzi.py` | 135 s | 40 % |
+
+Samotné kreslení dlaždic je ~5 s na variantu (0,03 s na dlaždici), zbytek renderu je start Chromia a stavba scény.
+Úzké hrdlo je Python na CPU, ne GPU – další GPU akcelerace renderu nic nepřinese.
+
+### Zrychlení (podle přínosu)
+- [ ] **Nahrávání na R2**: manifest porovnává velikost a čas změny, ale `dzi.py` vždy smaže a přepíše celý čtverec → po každém
+      překreslení se nahraje všech 1,4 GB (~1 MB/s), i když se bajty nezměnily. Hash obsahu v manifestu
+      (`skripty/nahrat_dlazdice_r2.mjs`) a S3 API (rclone / SDK) místo jednoho procesu `wrangler` na soubor.
+- [ ] **Přírůstkové `dzi`**: porovnat hash zdrojových PNG s minulým během a překódovat jen dotčené dlaždice pyramidy.
+      S předchozím bodem zlevní opravu jedné dominanty z desítek minut na minuty.
+- [ ] **Přetížení vláken v `dzi`**: 4 procesy × 8 vláken na 12 jádrech, zatímco jiné čtverce běží v `prep`. Jeden sdílený pool
+      pro kódování, nebo `IZO_DZI_VLAKNA=3`.
+- [ ] **`prep.py`**: `load()` převádí souřadnice po jedné geometrii Python lambdou → vektorový `shapely.transform` nad poli;
+      39× `iterrows`/`apply`; sousední čtverce a velké JSONy (`mmhk.json` – předpoklad, ověřit) se čtou znovu pro každý čtverec →
+      předpočítat po čtvercích; 4 textury ukládat souběžně a s nižší kompresí PNG.
+- [ ] **Cache kroků podle hashe vstupů**: rozdělit `prep` na scénu, textury a graf dopravy; změna dopravy nepřepočítá geometrii,
+      nezměněný čtverec se přeskočí celý.
+- [ ] **Render**: jeden start Chromia na čtverec a přepínání variant uvnitř místo 5 startů (odhad 43 s → 15–20 s).
+- [ ] **Měření předem**: do `build/render_par.log` zapisovat čas každé fáze (prep / render / dzi) a pustit `cProfile` na jeden
+      `prep`. Bez toho jsou body o vláknech a `prep.py` jen odhad z kódu.
+
+### Kód a workflow
+- [ ] **Háček přes `exec` do globálů**: `assets/custom_prep.py` závisí na interních názvech proměnných `prep.py`, rozbije ho
+      každý merge z upstreamu → explicitní rozhraní (kontextový objekt se zdokumentovanými poli).
+- [ ] **Regresní test obrazem**: pevné výřezy dominant (den, noc) přes `skripty/nahled_mista.py` porovnat s uloženým vzorem.
+      Dnešních 12 testů pokrývá jen nástroje, `prep` a render nic.
+- [ ] **Stavba do pracovní složky**: `postav.sh` hned na začátku maže `site/tiles`, při pádu není web → stavět vedle a na konci prohodit.
+- [ ] Drobnosti: `render_all.sh` má natvrdo `.venv/bin/python` (na Windows neběží); `python mhd.py || true` spolkne chybu;
+      konstanty `gx0`/`gy1` zkopírované v `render_chunk.sh` i `nahled_mista.py`; chybí `requirements.txt` / `pyproject.toml`
+      (verze Pythonu nejsou zamčené).
+- [ ] Rozdělit `web/app.html` (195 kB) a `render.html` (97 kB) na ES moduly (importmap už tam je, build krok není potřeba).
+
+### Git a upstream
+- [ ] **Kořenové repo bylo 2026-11-14 v odpojeném HEAD** (ne na `main`) – ověřit a vrátit na větev, jinak se commity mohou ztratit.
+- [ ] **Větev `hradec`** (7 commitů, +16 110 řádků proti upstreamu) míchá obecné opravy a městská data → rozdělit na obecné
+      commity (rebase na upstream, vhodné pro PR) a městské soubory.
+- [ ] **Městské soubory mimo klon**: přesunout do kořenového repa, cestu předat proměnnou prostředí (odpadne `git add -f` proti
+      upstream `.gitignore`); `izomapa` připojit jako submodul, aby byla dvojice commitů svázaná.
+- [ ] **PR autorovi po malých kusech**: `dalsi_zdroje`, jednosměrky v `road_route.py`, opravy mostů, silnice ve výstavbě,
+      háček `IZOMAPA_PLUGINS`, opravy pro Windows.
+- [ ] **Licence AGPL-3.0**: upravená izomapa běží veřejně, fork je v soukromém repu. AGPL nejspíš vyžaduje nabídnout návštěvníkům
+      zdrojový kód úprav – ověřit; fork zveřejnit nebo přidat odkaz na zdroj.
+- [ ] Generovaná data v gitu (`assets/prestavby.json`, 12 454 řádků) oddělit od ručně psaných, ať jsou diffy čitelné.
+
+Doporučené pořadí: nahrávání na R2, přírůstkové `dzi`, měření fází.
 
 ## Otevřené úkoly
 
