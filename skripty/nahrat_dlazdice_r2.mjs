@@ -1,9 +1,12 @@
 // Nahraje izomapa/site/tiles/ do Cloudflare R2 přes `wrangler r2 object put` (přihlášení řeší wrangler sám,
-// bez S3 klíčů a rclone). Navazuje: co už je nahrané (stejná velikost a čas změny), přeskočí podle
-// nasazeni/r2_manifest_<bucket>.json.
+// bez S3 klíčů a rclone). Navazuje: co už je nahrané, přeskočí podle nasazeni/r2_manifest_<bucket>.json.
+// Porovnává se OBSAH (sha256), ne čas změny: dzi.py přepíše všechny dlaždice čtverce, ale po opravě jedné dominanty
+// se změní jen pár dlaždic, ostatní mají stejné bajty a nahrávat se nemusí. Starý záznam "velikost:čas" se při
+// prvním běhu převede na hash, pokud soubor od posledního nahrání nikdo nezměnil.
 //
 // Použití (z izohradec/):  node skripty/nahrat_dlazdice_r2.mjs <bucket> [--paralelne 16] [--dry-run]
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, readdirSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 
@@ -22,10 +25,17 @@ const files = walk(join(SITE, 'tiles'));
 mkdirSync(join(ROOT, 'nasazeni'), { recursive: true });
 const MAN = join(ROOT, 'nasazeni', `r2_manifest_${BUCKET}.json`);
 const man = existsSync(MAN) ? JSON.parse(readFileSync(MAN, 'utf8')) : {};
-const todo = files.map((f) => { const s = statSync(f); return { f, key: relative(SITE, f).split(sep).join('/'), sig: `${s.size}:${Math.floor(s.mtimeMs)}`, size: s.size }; })
-  .filter((x) => man[x.key] !== x.sig);
+const sha = (f) => createHash('sha256').update(readFileSync(f)).digest('hex').slice(0, 32);
+const todo = files.map((f) => { const s = statSync(f); return { f, key: relative(SITE, f).split(sep).join('/'), old: `${s.size}:${Math.floor(s.mtimeMs)}`, size: s.size }; })
+  .filter((x) => {
+    const m = man[x.key];
+    if (m === x.old) { man[x.key] = x.hash = sha(x.f); return false; }          // starý záznam, soubor beze změny -> jen převést na hash
+    x.hash = sha(x.f);
+    return m !== x.hash;
+  });
 const total = todo.reduce((a, x) => a + x.size, 0);
 console.log(`souborů ${files.length}, k nahrání ${todo.length} (${(total / 1e6).toFixed(0)} MB) do ${BUCKET}, paralelně ${PAR}`);
+writeFileSync(MAN, JSON.stringify(man));   // uloží i převod starých záznamů na hash
 if (DRY || !todo.length) process.exit(0);
 
 const TYPES = { webp: 'image/webp', png: 'image/png', jpg: 'image/jpeg', json: 'application/json', dzi: 'application/xml', xml: 'application/xml' };
@@ -44,7 +54,7 @@ await Promise.all(Array.from({ length: PAR }, async () => {
     const x = todo[i++];
     let e = 'x';
     for (let a = 0; a < 4 && e; a++) { e = await run(x); if (e) await new Promise((r) => setTimeout(r, 2000 * 2 ** a)); }
-    if (e) failed.push(`${x.key}: ${e}`); else man[x.key] = x.sig;
+    if (e) failed.push(`${x.key}: ${e}`); else man[x.key] = x.hash;
     done++; bytes += x.size;
     if (Date.now() - lastSave > 15000) {
       lastSave = Date.now(); writeFileSync(MAN, JSON.stringify(man));
