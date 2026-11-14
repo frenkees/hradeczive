@@ -65,6 +65,9 @@ Poslední nasazení 2026-11-14 (z překreslení bez oprav mostů a podjezdů –
   kostel sv. Antonína, Adalbertinum, Aldis, Hvězdárna, Pedagogická fakulta, Rudolfinum, hotely Grand a Labská, Kněžský seminář, Pivovar,
   Lékařská a Farmaceutická fakulta, Gymnázium B. Němcové, Wiplerova vila, vila Tesařových. Barvy a výšky jsou odhad z fotek (`build/noc/katalog/`),
   poloha podle Wikidat; **zkontrolovat napárování na správnou budovu a vzhled** po celém překreslení (ověřeno jen kostel, radnice, Adalbertinum, seminář).
+  **2. dávka** (stejně, jen `spec`): Zbrojnice, Žižkova kasárna, Archa, Divadlo Drak, Odborná škola uměleckého zámečnictví, SPŠ stavební, vily (Fuchsových,
+  Honzákova, Nepasických, Píšova), Klicperova 4, Dům U Špuláků, Dům U Švagerků, Dělnický dům, škola v Kuklenách, škola koželužská, Novákovy garáže,
+  Aupark, OC Futurum, OC Atrium. Ve výřezu zkontrolováno jen centrum, východ a západ čtverce 0,0; Dělnický dům, Futurum a kostel sv. Antonína jsou v jiných čtvercích.
   Zbývá z katalogu (vlastní modely): lávky (Hradubická cyklostezka, Na Podhůrkách, Jiráskovy sady), Moravský jez, Kamenný most, most Klapák, Archa,
   Hlavní nádraží, Magistrát, Kulturní dům Střelnice, Žižkova kasárna, Zbrojnice; a další vily/činžáky.
 - **Cesty na hladině pod mosty** (2026-11-14, `assets/custom_prep.py` kroky 5a2 a 5c, platí pro celé město):
