@@ -47,7 +47,23 @@ Vše z `izomapa/` v Git Bash, Python `.venv/Scripts/python` s `PYTHONUTF8=1`.
 
 ## Čeká na překreslení (vizuální změny, zatím jen uložené)
 
-Nic – celá mapa překreslená a nasazená 2026-11-14 (mosty, Mileta, aréna, trasy MHD, funkce /api/zapasy).
+Poslední celé překreslení a nasazení 2026-11-14 (mosty, Mileta, aréna, trasy MHD, funkce /api/zapasy). Od té doby:
+
+- **Cesty na hladině pod mosty** (2026-11-14, `assets/custom_prep.py` kroky 5a2 a 5c, platí pro celé město):
+  - chodník a cyklostezka silničního mostu jsou v pasportu plocha nad vodou vedle mostovky; mostovka z dat měla jen
+    šířku vozovky, takže chodník zůstal namalovaný na hladině (most U Soutoku na Sokolské u nemocnice). Mostovka se teď
+    o chodník z pasportu rozšíří a osa se posune k němu (čtverec 0,0: 6 mostů, 0,1: 2);
+  - vozovka, chodník nebo dlažba namalovaná do řeky (víc než 1,5 m od břehu) se vrací na vodu – most je vždy 3D mostovka
+    nebo vlastní model (pás na hladině před jezem Hučák).
+- **Lávka u Aldisu a náplavka** (`lavka_aldis` v `assets/custom_models.js`, záznam v `dominanty.json`, mostovka z dat
+  skrytá v `upresneni.json` → `skryt_mosty`): bílá UHPC lávka 112 m s hrbem, žebra po 2,5 m (pod mostovkou k lanům,
+  nad ní sloupky zábradlí prohnuté ven, LED v madle svítí v noci), pilíř do V na východním břehu, vějířové schody
+  na západním konci. Náplavka pod ní na východním břehu: 9 dřevěných sedacích stupňů podél stezky (~34 m) a plovoucí molo
+  na místě mola z OSM. Výšky z DMR přes `probe`. Předlohy: `izomapa/landmarks_ref/lavka_aldis/` (33 fotek z Commons,
+  ZDROJE.md), poloha schodů podle fotky z 08/2024 (ortofoto je starší) – **ověřit délku a polohu schodů na místě**.
+  Nový obecný klíč `spec.bez_stromu` v `dominanty.json` skryje stromy v pásu vlastního mostu.
+- Náhledy před/po: `izomapa/preview/mosty/` (pred_/po_ soutok, hucak, aldis). Scény čtverců 0,0 a 0,1 jsou už připravené,
+  překreslit je potřeba všechny čtverce (oprava mostů platí pro celé město).
 
 ## Noční katalog kandidátů na dominanty
 
