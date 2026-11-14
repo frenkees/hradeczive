@@ -62,6 +62,11 @@ Poslední celé překreslení a nasazení 2026-11-14 (mosty, Mileta, aréna, tra
   na místě mola z OSM. Výšky z DMR přes `probe`. Předlohy: `izomapa/landmarks_ref/lavka_aldis/` (33 fotek z Commons,
   ZDROJE.md), poloha schodů podle fotky z 08/2024 (ortofoto je starší) – **ověřit délku a polohu schodů na místě**.
   Nový obecný klíč `spec.bez_stromu` v `dominanty.json` skryje stromy v pásu vlastního mostu.
+- **Malá Mileta** (u záchranky, 50.1990, 15.8343; 2026-11-14): nové ulice k obytné výstavbě jsou v OSM ještě
+  `highway=construction` (otevření 06/2027), pasport magistrátu je už má. Za hranicí zóny přestavby se kreslily z pasportu,
+  v zóně se cesty ve výstavbě přeskakovaly → na hranici zóny pruh trávy přes silnici. Teď se v zóně kreslí i silnice ve
+  výstavbě (`construction=` silniční třída). Náhled `izomapa/preview/mileta/mala_mileta_pred_po.jpg`.
+  Bypassy na Miletě: podle města jsou tři (SZ, JZ, JV) a všechny tři v mapě jsou – žádný nechybí.
 - Náhledy před/po: `izomapa/preview/mosty/` (pred_/po_ soutok, hucak, aldis). Scény čtverců 0,0 a 0,1 jsou už připravené,
   překreslit je potřeba všechny čtverce (oprava mostů platí pro celé město).
 
