@@ -47,7 +47,8 @@ Vše z `izomapa/` v Git Bash, Python `.venv/Scripts/python` s `PYTHONUTF8=1`.
 
 ## Čeká na překreslení (vizuální změny, zatím jen uložené)
 
-Poslední celé překreslení a nasazení 2026-11-14 (mosty, Mileta, aréna, trasy MHD, funkce /api/zapasy). Od té doby:
+Poslední nasazení 2026-11-14 (mosty, Mileta, aréna, trasy MHD, /api/zapasy). Celé překreslení všech 16 čtverců s následujícími změnami proběhlo
+2026-11-14 (+ zóna kruhový objezd Komenského), **dlaždice jsou v `izomapa/site/tiles`, ale NEJSOU nahrané na R2 ani nasazené na Vercel** (čeká na potvrzení):
 
 - **Cesty na hladině pod mosty** (2026-11-14, `assets/custom_prep.py` kroky 5a2 a 5c, platí pro celé město):
   - chodník a cyklostezka silničního mostu jsou v pasportu plocha nad vodou vedle mostovky; mostovka z dat měla jen
@@ -140,9 +141,8 @@ Samotné kreslení dlaždic je ~5 s na variantu (0,03 s na dlaždici), zbytek re
 Úzké hrdlo je Python na CPU, ne GPU – další GPU akcelerace renderu nic nepřinese.
 
 ### Zrychlení (podle přínosu)
-- [ ] **Nahrávání na R2**: manifest porovnává velikost a čas změny, ale `dzi.py` vždy smaže a přepíše celý čtverec → po každém
-      překreslení se nahraje všech 1,4 GB (~1 MB/s), i když se bajty nezměnily. Hash obsahu v manifestu
-      (`skripty/nahrat_dlazdice_r2.mjs`) a S3 API (rclone / SDK) místo jednoho procesu `wrangler` na soubor.
+- [x] **Nahrávání na R2** (2026-11-14): manifest teď porovnává sha256 obsahu, po překreslení se nahraje jen změněné (900 z 6 400 souborů, 325 MB
+      místo 1,4 GB). S3 API zatím ne (chybí R2 klíče v `tajne.env`; ~1 MB/s je nejspíš limit uploadu).
 - [ ] **Přírůstkové `dzi`**: porovnat hash zdrojových PNG s minulým během a překódovat jen dotčené dlaždice pyramidy.
       S předchozím bodem zlevní opravu jedné dominanty z desítek minut na minuty.
 - [ ] **Přetížení vláken v `dzi`**: 4 procesy × 8 vláken na 12 jádrech, zatímco jiné čtverce běží v `prep`. Jeden sdílený pool
@@ -153,7 +153,8 @@ Samotné kreslení dlaždic je ~5 s na variantu (0,03 s na dlaždici), zbytek re
 - [ ] **Cache kroků podle hashe vstupů**: rozdělit `prep` na scénu, textury a graf dopravy; změna dopravy nepřepočítá geometrii,
       nezměněný čtverec se přeskočí celý.
 - [ ] **Render**: jeden start Chromia na čtverec a přepínání variant uvnitř místo 5 startů (odhad 43 s → 15–20 s).
-- [ ] **Měření předem**: do `build/render_par.log` zapisovat čas každé fáze (prep / render / dzi) a pustit `cProfile` na jeden
+- [x] **Měření předem** (časy fází jsou v `build/render_par.log`; celé překreslení 2026-11-14: prep 150–240 s, render 40–70 s, dzi 150–175 s na čtverec, 26 min celkem; cProfile `prep` zbývá):
+- [ ] (původní zadání) do `build/render_par.log` zapisovat čas každé fáze (prep / render / dzi) a pustit `cProfile` na jeden
       `prep`. Bez toho jsou body o vláknech a `prep.py` jen odhad z kódu.
 
 ### Kód a workflow
@@ -168,14 +169,14 @@ Samotné kreslení dlaždic je ~5 s na variantu (0,03 s na dlaždici), zbytek re
 - [ ] Rozdělit `web/app.html` (195 kB) a `render.html` (97 kB) na ES moduly (importmap už tam je, build krok není potřeba).
 
 ### Git a upstream
-- [ ] **Kořenové repo bylo 2026-11-14 v odpojeném HEAD** (ne na `main`) – ověřit a vrátit na větev, jinak se commity mohou ztratit.
+- [x] Kořenové repo je na `main` (ověřeno 2026-11-14, odpojený HEAD nebyl), vše pushnuto.
 - [ ] **Větev `hradec`** (7 commitů, +16 110 řádků proti upstreamu) míchá obecné opravy a městská data → rozdělit na obecné
       commity (rebase na upstream, vhodné pro PR) a městské soubory.
 - [ ] **Městské soubory mimo klon**: přesunout do kořenového repa, cestu předat proměnnou prostředí (odpadne `git add -f` proti
       upstream `.gitignore`); `izomapa` připojit jako submodul, aby byla dvojice commitů svázaná.
 - [ ] **PR autorovi po malých kusech**: `dalsi_zdroje`, jednosměrky v `road_route.py`, opravy mostů, silnice ve výstavbě,
       háček `IZOMAPA_PLUGINS`, opravy pro Windows.
-- [ ] **Licence AGPL-3.0**: upravená izomapa běží veřejně, fork je v soukromém repu. AGPL nejspíš vyžaduje nabídnout návštěvníkům
+- [x] **Licence AGPL-3.0** (fork `frenkees/hradeczive-izomapa` veřejný od 2026-11-14, odkaz na zdroj v patičce mapy po dalším nasazení; původně:): upravená izomapa běží veřejně, fork je v soukromém repu. AGPL nejspíš vyžaduje nabídnout návštěvníkům
       zdrojový kód úprav – ověřit; fork zveřejnit nebo přidat odkaz na zdroj.
 - [ ] Generovaná data v gitu (`assets/prestavby.json`, 12 454 řádků) oddělit od ručně psaných, ať jsou diffy čitelné.
 
