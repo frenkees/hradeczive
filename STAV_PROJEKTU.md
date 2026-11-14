@@ -47,8 +47,8 @@ Vše z `izomapa/` v Git Bash, Python `.venv/Scripts/python` s `PYTHONUTF8=1`.
 
 ## Čeká na překreslení (vizuální změny, zatím jen uložené)
 
-Poslední nasazení 2026-11-14 (z překreslení bez oprav mostů a podjezdů – ty čekají na další překreslení) (mosty, Mileta, aréna, trasy MHD, /api/zapasy). Celé překreslení všech 16 čtverců s následujícími změnami proběhlo
-2026-11-14 (+ zóna kruhový objezd Komenského), dlaždice nahrané na R2 a nasazené na Vercel (2026-11-14):
+Poslední celé překreslení a nasazení 2026-11-14 večer (mosty, podjezdy, zářezy, Šrámkův most, 38 dominant z katalogu, zastávky MHD) (mosty, Mileta, aréna, trasy MHD, /api/zapasy). Celé překreslení všech 16 čtverců s následujícími změnami proběhlo
+2026-11-14 (+ zóna kruhový objezd Komenského), (vše níže je od 2026-11-14 večer nasazené na živém webu; dlaždice R2 + Vercel):
 
 - **Obecná oprava mostů** (2026-11-14, izomapa commit `16710e5`, `prep.py`, `assets/custom_prep.py`): opěry v úrovni silnice, mostovka v rovině a jen po
   břeh, lampy a zábradlí na mostě (nad vodou se zahazují), nájezd nepokračuje přes křižovatku. Náhledy `izomapa/preview/mosty2/` (m1–m8 před/po).
@@ -268,3 +268,8 @@ Odkazy jsou na živou mapu (`#leto@lat,lon,zoom`); hradeczive.vercel.app funguje
   (remote `zaloha`, větev `hradec`; `git push` jde tam). Remote `origin` = upstream autora – tam nepushovat.
 - Mimo git (vyrobí se znovu): `izomapa/build`, `data*`, `site`, `assets/mmhk.json`, `assets/mmhk_znaceni/`, `nasazeni/vercel`.
 - Tajemství jen lokálně: `nasazeni/tajne.env`, `nasazeni/wedos_kontakt.json`, `.vercel/`.
+
+## Poznámky z překreslení 2026-11-14
+- `render.mjs` vybíral náhodný port a Chromium odmítl 5060 (ERR_UNSAFE_PORT) → čtverec 0,-1 spadl; opraveno (porty 20000–49999 s opakováním).
+- GTFS: agency DPMHK se přečíslovala (A194 → A193); `mesto.json` `mhd.dopravce` je teď název „Dopravní podnik města Hradce Králové“ (mhd.py hledá i podle části názvu).
+- Při chybě jednoho čtverce `postav.sh` skončí před kroky po renderu (stromy, preview, overlay, mhd, build_html): pustit je ručně, nebo celý `postav.sh render` znovu.
