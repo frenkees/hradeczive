@@ -60,6 +60,13 @@ Poslední nasazení 2026-11-14 (z překreslení bez oprav mostů a podjezdů –
   rozpětí 62 m a vzepětí 10 m jsou odhad z fotek. Předlohy `izomapa/landmarks_ref/sramek_most/` (CC BY-SA 4.0, ZDROJE.md).
 - **Zastávky MHD**: v panelu Vrstvy volba „Zastávky MHD“ (značky + jména při přiblížení), kliknutí a hledání ukazují odjezdy (už dřív), vybraná zastávka pulzuje.
   Jen web, render není potřeba.
+- **Dominanty z nočního katalogu, 1. dávka** (2026-11-14, `assets/dominanty.json`, jen popis budov `spec` – barvy, střechy, věže, bez vlastních modelů):
+  kostel Nanebevzetí P. Marie, Radnice, Klicperovo divadlo, Galerie moderního umění, Evangelický kostel, Sbor kněze Ambrože, kostel Božského srdce,
+  kostel sv. Antonína, Adalbertinum, Aldis, Hvězdárna, Pedagogická fakulta, Rudolfinum, hotely Grand a Labská, Kněžský seminář, Pivovar,
+  Lékařská a Farmaceutická fakulta, Gymnázium B. Němcové, Wiplerova vila, vila Tesařových. Barvy a výšky jsou odhad z fotek (`build/noc/katalog/`),
+  poloha podle Wikidat; **zkontrolovat napárování na správnou budovu a vzhled** po celém překreslení (ověřeno jen kostel, radnice, Adalbertinum, seminář).
+  Zbývá z katalogu (vlastní modely): lávky (Hradubická cyklostezka, Na Podhůrkách, Jiráskovy sady), Moravský jez, Kamenný most, most Klapák, Archa,
+  Hlavní nádraží, Magistrát, Kulturní dům Střelnice, Žižkova kasárna, Zbrojnice; a další vily/činžáky.
 - **Cesty na hladině pod mosty** (2026-11-14, `assets/custom_prep.py` kroky 5a2 a 5c, platí pro celé město):
   - chodník a cyklostezka silničního mostu jsou v pasportu plocha nad vodou vedle mostovky; mostovka z dat měla jen
     šířku vozovky, takže chodník zůstal namalovaný na hladině (most U Soutoku na Sokolské u nemocnice). Mostovka se teď
