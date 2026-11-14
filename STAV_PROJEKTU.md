@@ -47,9 +47,19 @@ Vše z `izomapa/` v Git Bash, Python `.venv/Scripts/python` s `PYTHONUTF8=1`.
 
 ## Čeká na překreslení (vizuální změny, zatím jen uložené)
 
-Poslední nasazení 2026-11-14 (mosty, Mileta, aréna, trasy MHD, /api/zapasy). Celé překreslení všech 16 čtverců s následujícími změnami proběhlo
+Poslední nasazení 2026-11-14 (z překreslení bez oprav mostů a podjezdů – ty čekají na další překreslení) (mosty, Mileta, aréna, trasy MHD, /api/zapasy). Celé překreslení všech 16 čtverců s následujícími změnami proběhlo
 2026-11-14 (+ zóna kruhový objezd Komenského), dlaždice nahrané na R2 a nasazené na Vercel (2026-11-14):
 
+- **Obecná oprava mostů** (2026-11-14, izomapa commit `16710e5`, `prep.py`, `assets/custom_prep.py`): opěry v úrovni silnice, mostovka v rovině a jen po
+  břeh, lampy a zábradlí na mostě (nad vodou se zahazují), nájezd nepokračuje přes křižovatku. Náhledy `izomapa/preview/mosty2/` (m1–m8 před/po).
+  Zbývá: u mostu v násypu je terén po zářezu zjednodušený (krok mřížky 5 m).
+- **Podjezdy** (50.21093, 15.80850 – nádraží): kratší silniční „tunel“ pod tratí = podjezd; `prep.py` vyřízne terén podél osy (`TUNNEL_PASSES`),
+  trať nad ním dostane syntetický `is_bridge`, portály mají všechny silniční třídy (5. prvek = poloviční šířka), pasport magistrátu nekreslí vozovku
+  nad dlouhým tunelem (`TUNNEL_ZONES`). Obecný zářez pod každým mostem nad silnicí/tratí/pěšinou (terén pod mostovkou klesne na úroveň cesty).
+- **Nový most plk. Šrámka ve Svinarech** (obloukový ocelový, 50.2158, 15.9081, přes Orlici): model `most_sramek` (dva modré oblouky, závěsy),
+  rozpětí 62 m a vzepětí 10 m jsou odhad z fotek. Předlohy `izomapa/landmarks_ref/sramek_most/` (CC BY-SA 4.0, ZDROJE.md).
+- **Zastávky MHD**: v panelu Vrstvy volba „Zastávky MHD“ (značky + jména při přiblížení), kliknutí a hledání ukazují odjezdy (už dřív), vybraná zastávka pulzuje.
+  Jen web, render není potřeba.
 - **Cesty na hladině pod mosty** (2026-11-14, `assets/custom_prep.py` kroky 5a2 a 5c, platí pro celé město):
   - chodník a cyklostezka silničního mostu jsou v pasportu plocha nad vodou vedle mostovky; mostovka z dat měla jen
     šířku vozovky, takže chodník zůstal namalovaný na hladině (most U Soutoku na Sokolské u nemocnice). Mostovka se teď
