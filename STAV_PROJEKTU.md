@@ -48,7 +48,7 @@ Vše z `izomapa/` v Git Bash, Python `.venv/Scripts/python` s `PYTHONUTF8=1`.
 ## Čeká na překreslení (vizuální změny, zatím jen uložené)
 
 Poslední nasazení 2026-11-14 (mosty, Mileta, aréna, trasy MHD, /api/zapasy). Celé překreslení všech 16 čtverců s následujícími změnami proběhlo
-2026-11-14 (+ zóna kruhový objezd Komenského), **dlaždice jsou v `izomapa/site/tiles`, ale NEJSOU nahrané na R2 ani nasazené na Vercel** (čeká na potvrzení):
+2026-11-14 (+ zóna kruhový objezd Komenského), dlaždice nahrané na R2 a nasazené na Vercel (2026-11-14):
 
 - **Cesty na hladině pod mosty** (2026-11-14, `assets/custom_prep.py` kroky 5a2 a 5c, platí pro celé město):
   - chodník a cyklostezka silničního mostu jsou v pasportu plocha nad vodou vedle mostovky; mostovka z dat měla jen
