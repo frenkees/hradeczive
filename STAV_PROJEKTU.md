@@ -277,3 +277,16 @@ Odkazy jsou na živou mapu (`#leto@lat,lon,zoom`); hradeczive.vercel.app funguje
 - `render.mjs` vybíral náhodný port a Chromium odmítl 5060 (ERR_UNSAFE_PORT) → čtverec 0,-1 spadl; opraveno (porty 20000–49999 s opakováním).
 - GTFS: agency DPMHK se přečíslovala (A194 → A193); `mesto.json` `mhd.dopravce` je teď název „Dopravní podnik města Hradce Králové“ (mhd.py hledá i podle části názvu).
 - Při chybě jednoho čtverce `postav.sh` skončí před kroky po renderu (stromy, preview, overlay, mhd, build_html): pustit je ručně, nebo celý `postav.sh render` znovu.
+
+## Vlaky, přejezdy, NAD (2026-11-15, jen web, bez překreslení)
+Podrobný plán a postup: `PLAN_vlaky.md`.
+- **Vlaky z GTFS:** `nastroje/vlaky_z_gtfs.py` (osobní vlaky přes oblast mapy, 75 dní dopředu) -> `nastroje/vlaky.py` (trasy po kolejích, graf spojuje jen konce kolejí) -> `mhd.py`; v `mesto.json` je `"vlak"`.
+  Pořadí po změně JŘ: `vlaky_z_gtfs.py`, `vlaky.py`, `mhd.py`, `build_html.py`, nasazení webu (stačí `pripravit_vercel.mjs` a `vercel deploy`, bez renderu).
+- **Koleje HK hl.n.:** `nastroje/vlaky_koleje.py` -> `assets/vlaky_koleje.json`: E1–E12 od budovy na západ = 3a, 3, 5, 1, 2, 6, 8, 10, 12, 14, 16, 18 (potvrzeno uživatelem podle schématu Staničáře);
+  pravidla (směr příjezdu > odjezdu -> četnosti kolejí) z GVD 15/16 ve hře Staničář (`Desktop/stanicar-komplet/.../HK_1-01.xml`). Směry: ONL Pardubice, OPL Praha/Chlumec, PNL Jaroměř, HSP Slezské Předměstí, VSE Všestary/Jičín.
+  Jízda po levé koleji (ve stanicích mimo HK hl.n. `uzel_levy`). Číslo koleje je odhad ze staré tabulky, ne skutečné přidělení.
+- **Soupravy:** model v 5. položce trasy (`routes[i][4]`) z `vlaky_z_gtfs.py` (dopravce, druh, směr, hash čísla vlaku); katalog `TRAINS` ve `web/app.html` (+ FLIRT, 163+vozy, dvojité jednotky, rychlík 5 vozů, nákladní `f_*`).
+- **Nákladní vlaky:** 22 náhodných průjezdů v ~45 % dnů (`vlaky.py`, služby N0…): uhlí, kontejnery, auta Škoda, cisterny, dřevo; jedou po trasách přes hlavní koleje HK hl.n.
+- **Přejezdy:** `nastroje/prejezdy_z_dat.py` (Overpass nefunguje) -> `assets/prejezdy.json` (v `.gitignore`); `prep.py` je přiřadí silnicím (34 ve městě); web: výstražník, červenobílá půlzávora (6 s po začátku výstrahy), auta čekají.
+- **Výluka HK – Jaroměř (1. 11. – 12. 12. 2026):** `nastroje/vyluka_nad.py` z `assets/vyluka_odjezdy.json` (přepsané z PDF ČD, 66 spojů ze stání F, dny z obrázkových značek = odhad) -> `build/gtfs_extra/`, `mhd.py` je čte; autobusy J, R, Z jedou jen do Plotiště (okraj mapy).
+- **Zbývá:** vlaky vzniklé v HK se objeví až při odjezdu; vlaky na Jaroměř jedou i za výluky (v JŘ jsou); živá poloha vlaků není (GRAPP a ČD nemají povolený strojový přístup); NAD příjezdy na stání J nejsou.
