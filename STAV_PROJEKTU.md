@@ -68,6 +68,10 @@ Poslední celé překreslení a nasazení 2026-11-14 večer (mosty, podjezdy, z�
   **2. dávka** (stejně, jen `spec`): Zbrojnice, Žižkova kasárna, Archa, Divadlo Drak, Odborná škola uměleckého zámečnictví, SPŠ stavební, vily (Fuchsových,
   Honzákova, Nepasických, Píšova), Klicperova 4, Dům U Špuláků, Dům U Švagerků, Dělnický dům, škola v Kuklenách, škola koželužská, Novákovy garáže,
   Aupark, OC Futurum, OC Atrium. Ve výřezu zkontrolováno jen centrum, východ a západ čtverce 0,0; Dělnický dům, Futurum a kostel sv. Antonína jsou v jiných čtvercích.
+  **3. dávka** (2026-11-15, jen `spec`, zatím NEvyrenderováno – čeká na další překreslení): Magistrát, ředitelství státních drah, Steinského palác, Weinhengstův dům,
+  Rejchlův dům, Jihlavcův dům, Knihovna města, Studijní a vědecká knihovna, Střední zdravotnická škola, Anglobanka, Hotel U Královny Elišky, plynárna Kukleny, Prior,
+  Pražskopředměstská radnice, Městské lázně, Dům U skleněné věže, vila Charváta, kostel sv. Pavla (Pouchov), Vojenská nemocnice (celkem 88 dominant).
+  Ve výřezu 0,0 ověřeno napárování Magistrátu, ředitelství drah a ČSA 27/29. Katalog už nemá další vhodné budovy bez vlastního modelu.
   Zbývá z katalogu (vlastní modely): lávky (Hradubická cyklostezka, Na Podhůrkách, Jiráskovy sady), Moravský jez, Kamenný most, most Klapák, Archa,
   Hlavní nádraží, Magistrát, Kulturní dům Střelnice, Žižkova kasárna, Zbrojnice; a další vily/činžáky.
 - **Cesty na hladině pod mosty** (2026-11-14, `assets/custom_prep.py` kroky 5a2 a 5c, platí pro celé město):
