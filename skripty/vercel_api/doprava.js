@@ -22,12 +22,16 @@ export async function nactiProvoz(klic, fetchFn = fetch) {
   return { t: d.sourceUpdated || new Date().toISOString(), s };
 }
 
+// Návštěvníci HERE nevolají: poslední snímek stahuje jen GitHub Actions (skripty/doprava_sber.mjs, pevný rozvrh = pevná měsíční kvóta)
+// do větve doprava-data (live.json); funkce ho jen přeposílá. nactiProvoz zůstává tady, protože ho sběrač importuje.
+const ZDROJ = process.env.DOPRAVA_LIVE_URL || 'https://raw.githubusercontent.com/frenkees/hradeczive/doprava-data/live.json';
 export async function GET() {
-  const klic = process.env.HERE_API_KEY;
-  if (!klic) return new Response('{"s":{}}', { status: 503, headers: { ...hlavicky, 'cache-control': 'no-store' } });
-  if (!pamet || Date.now() - pamet.kdy > TTL) {
-    try { pamet = { kdy: Date.now(), telo: JSON.stringify(await nactiProvoz(klic)) }; }
-    catch (e) {
+  if (!pamet || Date.now() - pamet.kdy > 120e3) {
+    try {
+      const r = await fetch(ZDROJ, { signal: AbortSignal.timeout(10000) });
+      if (!r.ok) throw new Error(String(r.status));
+      pamet = { kdy: Date.now(), telo: await r.text() };
+    } catch (e) {
       if (!pamet) return new Response('{"s":{}}', { status: 502, headers: { ...hlavicky, 'cache-control': 'no-store' } });   // starší odpověď je lepší než žádná
     }
   }
