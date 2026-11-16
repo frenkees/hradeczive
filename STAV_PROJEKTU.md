@@ -3,6 +3,17 @@
 Aktualizováno 2026-11-16 (večer). Veřejně: **https://hradeczive.vercel.app** (staré izohradec.vercel.app je alias).
 Cíl a souřadnice jsou v [CLAUDE.md](CLAUDE.md), návod nástroje v [izomapa/CLAUDE.md](izomapa/CLAUDE.md).
 
+## Překreslení a nasazení 2026-11-16 večer
+Celé překreslení všech 16 čtverců (20 min) a nasazení na hradeczive.cz (R2 + Vercel, včetně `/api/doprava`, HERE klíč už je ve Vercelu).
+Zahrnuje vše dosud „uložené“: obchody a značky, nákupní centra, 3. dávka dominant, sloučení upstreamu (semafory, hřiště), mosty/podjezdy,
+Futurum (issue #2), Kaufland ve výstavbě se nekreslí (#3), knihovna zpět s modelem `knihovna` (#4; 3. dávka dominant ji přepsala obecným popisem),
+přístřešky zastávek otočené k silnici, svislé značky (~18,8 tis.). Nezbývá nic „čekajícího na překreslení“ kromě vánoc (viz níže).
+- **Zrychlení prepu** (čtverec ~160 s → 73–110 s): `MaxFilter` přes scipy (25 s), převod do S-JTSK interpolací (40 s), vektorové `load()`, `compress_level=1` u mezisouborů, vlákna `dzi` podle počtu souběžných čtverců (`IZO_DZI_VLAKNA`).
+  Přírůstkové `dzi` záměrně NEdělat: paleta se počítá z celého obrazu, takže po každé změně by se stejně změnila všem dlaždicím.
+- **HERE doprava**: ověřit podmínky (hledání: starší podmínky HERE Platform omezují ukládání výstupu na 30 dní a vyžadují uvedení HERE; Advanced Traffic má podle ceníku 2 500 bezplatných dotazů měsíčně, náš provoz je až ~4 300/měs. při stálé návštěvnosti). Sběr ukládá jen agregovaný histogram, ne surové snímky.
+- **Vánoční náměstí** (později): stavět podle webu vanocevhradci a vlastních fotek uživatele (`assets/vanoce.json`, `vanoce.sh`).
+- **Dashboard** (`skripty/dashboard/server.py`): volání git/vercel/gh blikala okny konzole; opraveno `CREATE_NO_WINDOW`, tray je třeba po změně restartovat.
+
 ## Co je hotové
 
 - **Celé město**: 16 čtverců 2,3 × 2,3 km (i, j ∈ −1…2 kolem 50.20539, 15.83009), 4 roční období + noc, MHD DPMHK podle jízdních řádů.
