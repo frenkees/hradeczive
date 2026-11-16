@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hradec Živě – stav</title>
+<style>
+:root{--bg:#10141c;--p:#1a2030;--e:#2c3650;--ink:#e8edf5;--m:#8d99b0;--ok:#4cc38a;--warn:#f2c66d;--bad:#ef6a5b;--blue:#5aa2ff}
+@media (prefers-color-scheme:light){:root{--bg:#f3f5f9;--p:#fff;--e:#d6dce8;--ink:#17202f;--m:#5b6678}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,Segoe UI,sans-serif}
+header{display:flex;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--e)}h1{font-size:1.1rem;margin:0;flex:1}
+main{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;padding:12px 16px}
+.card{background:var(--p);border:1px solid var(--e);border-radius:8px;padding:12px 14px}.card h2{margin:0 0 8px;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:var(--m)}
+.pill{display:inline-block;padding:1px 9px;border-radius:99px;font-size:.8rem;font-weight:600;color:#10141c}.ok{background:var(--ok)}.warn{background:var(--warn)}.bad{background:var(--bad)}.blue{background:var(--blue)}.gray{background:var(--m)}
+.bar{height:10px;background:var(--e);border-radius:5px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--blue)}
+ul{margin:0;padding-left:1.1em}li{margin:2px 0}small,.m{color:var(--m)}
+a.b{background:var(--p);border:1px solid var(--e);color:var(--ink);padding:5px 10px;border-radius:6px;text-decoration:none;display:inline-block;margin:2px 4px 2px 0}
+a.b:hover{border-color:var(--blue)}table{width:100%;border-collapse:collapse;font-size:.85rem}td,th{padding:2px 6px;text-align:left;border-bottom:1px solid var(--e)}
+</style></head><body>
+<header><h1>Hradec Živě – stav projektu</h1><span class="m" id="cas"></span></header>
+<main id="m"></main>
+<script>
+const E = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pill = (t, c) => `<span class="pill ${c}">${E(t)}</span>`, min = (s) => (s == null ? '?' : Math.max(1, Math.round(s / 60)) + ' min');
+function draw(s) {
+  const r = s.render, n = r.hotovo.length, p = Math.round(100 * n / r.celkem);
+  const st = { bezi: ['běží', 'blue'], hotovo: ['hotovo', 'ok'], chyba: ['chyba', 'bad'], stoji: ['neběží', 'gray'], nic: ['bez logu', 'gray'] }[r.stav] || ['?', 'gray'];
+  const rows = r.hotovo.slice(-8).map((d) => `<tr><td>${E(d.ctverec)}</td><td>${d.prep} s</td><td>${d.render} s</td><td>${d.dzi} s</td></tr>`).join('');
+  const dom = Object.entries(s.domena).map(([h, c]) => `<li>${E(h)} ${c === 200 ? pill('OK', 'ok') : c >= 300 && c < 400 ? pill(c, 'warn') : pill(c || 'nedostupná', 'bad')}</li>`).join('');
+  const g = (x, t) => `<h2>${t}</h2><div class="m">větev ${E(x.vetev)} · neuložených změn: ${x.zmeny}</div><ul>${(x.commity || []).map((c) => { const [h, a, ...m] = c.split('|'); return `<li><code>${E(h)}</code> ${E(m.join('|')).slice(0, 70)} <small>${E(a)}</small></li>`; }).join('')}</ul>`;
+  const hl = s.hlaseni.otevrena || [];
+  document.getElementById('m').innerHTML = `
+ <section class="card"><h2>Render ${pill(st[0], st[1])}</h2><div>${n} / ${r.celkem} čtverců${r.eta_s != null ? ` · zbývá asi ${min(r.eta_s)}` : ''}</div><div class="bar"><i style="width:${p}%"></i></div>
+  <table><tr><th>čtverec</th><th>prep</th><th>render</th><th>dzi</th></tr>${rows}</table><small>${E(r.posledni)}</small></section>
+ <section class="card"><h2>Nasazení (Vercel)</h2><ul>${(s.nasazeni.radky || []).map((x) => `<li><small>${E(x).slice(0, 100)}</small></li>`).join('') || '<li class="m">žádná data</li>'}</ul></section>
+ <section class="card"><h2>Domény</h2><ul>${dom}</ul></section>
+ <section class="card"><h2>Hlášení z mapy (${hl.length})</h2><ul>${hl.map((i) => `<li><a href="${E(i.url)}" target="_blank" rel="noopener">#${i.number} ${E(i.title)}</a></li>`).join('') || '<li class="m">žádná otevřená' + (s.hlaseni.chyba ? ' (' + E(s.hlaseni.chyba) + ')' : '') + '</li>'}</ul></section>
+ <section class="card">${g(s.git.izomapa, 'Git – izomapa')}</section>
+ <section class="card">${g(s.git.koren, 'Git – kořen')}</section>
+ <section class="card"><h2>Čeká na překreslení (${(s.fronta.polozky || []).length})</h2><ul>${(s.fronta.polozky || []).slice(0, 8).map((x) => `<li>${E(x)}</li>`).join('')}</ul></section>
+ <section class="card"><h2>Otevřít</h2><a class="b" href="#" data-o="mapa">Živá mapa</a><a class="b" href="#" data-o="mapa-lokalne">Lokální mapa</a><a class="b" href="#" data-o="slozka">Složka projektu</a><a class="b" href="#" data-o="stav">STAV_PROJEKTU</a><a class="b" href="#" data-o="log">Log renderu</a></section>`;
+  document.getElementById('cas').textContent = 'aktualizováno ' + s.cas;
+  document.querySelectorAll('[data-o]').forEach((a) => { a.onclick = (e) => { e.preventDefault(); fetch('/otevri/' + a.dataset.o); }; });
+}
+async function tick() { try { draw(await (await fetch('/api/stav')).json()); } catch { document.getElementById('cas').textContent = 'server neběží'; } }
+tick(); setInterval(tick, 5000);
+</script></body></html>
