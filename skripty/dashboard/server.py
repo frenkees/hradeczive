@@ -17,7 +17,8 @@ AKCE = {'render': ('akce/render.sh', LOG), 'nasadit': ('akce/nasadit.sh', BUILD 
 
 def sh(cmd, cwd=None, timeout=25):
     try:
-        r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=timeout, shell=isinstance(cmd, str))
+        r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=timeout, shell=isinstance(cmd, str),
+                           creationflags=0x08000000 if os.name == 'nt' else 0)   # CREATE_NO_WINDOW: pod pythonw jinak každé volání gitu/vercelu/gh bliká oknem konzole
         return (r.stdout or '').strip()
     except Exception:
         return ''
@@ -114,10 +115,11 @@ def spust(nazev):
     a = akce()
     if (nazev == 'render' and not a['lze_renderovat']) or (nazev == 'nasadit' and not a['lze_nasadit']): return False
     kod, start = BUILD / f'akce_{nazev}.kod', BUILD / f'akce_{nazev}.start'
-    kod.unlink(missing_ok=True); start.write_text(str(time.time()))
+    kod.unlink(missing_ok=True)
     cmd = f'sh "{(Path(__file__).parent / skript).as_posix()}" > "{log.as_posix()}" 2>&1; echo $? > "{kod.as_posix()}"'
     subprocess.Popen([shutil.which('sh') or 'sh', '-c', cmd], cwd=ROOT, creationflags=(0x08000000 | 0x00000008) if os.name == 'nt' else 0,
                      stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    start.write_text(str(time.time()))              # značka „běží“ jen když se proces opravdu spustil
     return True
 
 

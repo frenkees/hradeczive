@@ -1,6 +1,6 @@
 # Izometrický Hradec Králové – stav projektu
 
-Aktualizováno 2026-11-13. Veřejně: **https://hradeczive.vercel.app** (staré izohradec.vercel.app je alias).
+Aktualizováno 2026-11-16 (večer). Veřejně: **https://hradeczive.vercel.app** (staré izohradec.vercel.app je alias).
 Cíl a souřadnice jsou v [CLAUDE.md](CLAUDE.md), návod nástroje v [izomapa/CLAUDE.md](izomapa/CLAUDE.md).
 
 ## Co je hotové
@@ -224,7 +224,7 @@ Doporučené pořadí: nahrávání na R2, přírůstkové `dzi`, měření fáz
 
 ## Otevřené úkoly
 
-- [ ] **Licence dat magistrátu**: nikde výslovně uvedená; zdroj je v patičce, ale je dobré poslat magistrátu dotaz / žádost o souhlas.
+- [x] **Licence dat magistrátu**: uživatel potvrdil 2026-11-16, že je v pořádku (zdroj zůstává v patičce).
 - [ ] **Doména hradeczive.eu**: registrace u WEDOS přes WAPI (`skripty/domena.mjs`), DNS v Cloudflare. Čeká na účet WEDOS
       (kredit, WAPI heslo, povolená IP), Cloudflare API token a vyplnění `nasazeni/tajne.env` + `nasazeni/wedos_kontakt.json`
       (obojí mimo git). Ostrý nákup jen po výslovném potvrzení. Pak: Vercel doména, R2 doména `tiles.hradeczive.eu`,
@@ -232,16 +232,16 @@ Doporučené pořadí: nahrávání na R2, přírůstkové `dzi`, měření fáz
 - [ ] **Nábřežní zdi**: podle laseru 2,5–3 m nad hladinou (hladina je v DMR dopočítaná); uživatel odhaduje ~4 m – případně
       snížit hladinu v centru.
 - [ ] **Pasport místy zastaralý** (např. kruhový objezd Komenského 50.2078, 15.8325 v pasportu chybí) – projít mapu proti ortofotu.
-- [ ] **Svislé dopravní značky** (WFS `pk-dzs-*`, 13,7 tis.) zatím nekreslené – potřebují vlastní 3D model.
+- [x] **Svislé dopravní značky** (2026-11-16): `skripty/mmhk_znacky.py` (z `izomapa/`) stáhne WFS `pk-dzs-z` do `mmhk.json` (klíč `znacky`, ~18,8 tis.), hook `custom_prep.py` (6b, vypnout `IZO_ZNACKY_DZ=0`) postaví sloupek s tabulí kolmo k ose silnice (`props.sg_*`), model v `render.html` (barva podle druhu: výstražné, stůj/dej přednost, zákazové, příkazové, přednostní, informativní, dodatkové). Tabule jsou jednobarevné bez piktogramů (3–5 px).
 - [ ] **Pull request autorovi izomapy**: obecná volba `dalsi_zdroje` (build_html.py, web/app.html) a další obecné úpravy
       na větvi `hradec` v `izomapa/`.
 - [ ] Letadla (`functions/`) na Vercelu nefungují (vypnuto).
-- [ ] **Zastávky MHD na Riegrově náměstí**: opravit orientaci (natočení) zastávek (2026-11-16, od uživatele).
-- [ ] **Hotel Černigov v noci**: skrz budovu prosvítají okna budov v pozadí (noční okna se kreslí přes/skrz model) – opravit.
-- [ ] **Delší vlaky na nástupištích**: lokomotiva zastaví uprostřed nástupiště a vagony zůstanou mimo – souprava se má zarovnat podle délky nástupiště, aby celý vlak stál u hrany.
-- [ ] **Klikací pole na hlavním nádraží**: kliknutí otevře pop-up s odjezdy vlaků v příštích 60 min (z jízdních řádů). Pozor na zalamování řádků.
-- [ ] **Pop-up zastávky MHD**: čas se občas zalamuje i na desktopu, přestože je místa dost – opravit (nowrap, šířky sloupců).
-- [ ] **Mobil**: menší písmo a pop-up přes celý displej (karty MHD i nádraží).
+- [x] **Zastávky MHD na Riegrově náměstí** (2026-11-16): přístřešek měl otevřenou stranu podle směru čáry silnice bez ohledu na stranu; `prep.py` ji teď otáčí k nejbližší silnici (všechny přístřešky ve městě).
+- [ ] **Hotel Černigov v noci**: skrz budovu prosvítají okna budov v pozadí – v noci i ve dne jsem v náhledu (`preview/cern_noc.png`) nic takového nenašel (okna vlevo a vpravo patří sousedním budovám za věží); chce ověřit na živé mapě podle konkrétního místa (odkaz/screenshot od uživatele).
+- [x] **Delší vlaky na nástupištích** (2026-11-16, `mhdPos` ve `web/app.html`): zastávka je střed nástupiště; na konci trasy vlak přesahuje o půl délky (rovně za konec), takže stojí celý středem u nástupiště.
+- [x] **Klikací pole na hlavním nádraží** (2026-11-16): klik na budovu Hlavního nádraží ukáže odjezdy vlaků na 60 min (`showStation`), číslo koleje je odhad.
+- [x] **Pop-up zastávky MHD** (2026-11-16): odjezdy mají vlastní rozložení (`dl.dep`, časy `.tm` nowrap).
+- [x] **Mobil** (2026-11-16): karta s odjezdy je kompaktní (písmo .78 rem, výška max. 38 %).
 - [ ] Před zveřejněním fakt projít mapu a příběhy míst proti skutečnosti.
 
 ## Nápady a požadavky do budoucna (zadání uživatele 2026-11-13)
