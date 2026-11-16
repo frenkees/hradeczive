@@ -49,28 +49,58 @@ export function typicka(agg) {
   return { n: agg.n, aktualizace: agg.aktualizace, s };
 }
 
+// denní počítadlo dlaždic TomTom (zdarma 50 000 dlaždic denně; limit si držíme výrazně níž)
+export function kvotaDen(agg, pocet, kdy = new Date(), limit = +(process.env.TOMTOM_DENNI_LIMIT || 20000)) {
+  const d = kdy.toISOString().slice(0, 10);
+  if (!agg.kvotaTT || agg.kvotaTT.d !== d) agg.kvotaTT = { d, n: 0 };
+  if (agg.kvotaTT.n + pocet > limit) return false;
+  agg.kvotaTT.n += pocet; return true;
+}
+
+// sloučí snímek jednoho zdroje do live.json: klíče TomTom začínají "t<číslo>/", klíče HERE číslem a čárkou; druhý zdroj zůstane z minula
+export const jeTomTom = (k) => /^t\d+\//.test(k);
+export function slucLive(stary, novy, zdroj) {
+  const s = {};
+  for (const [k, v] of Object.entries(stary?.s || {})) if (jeTomTom(k) !== (zdroj === 'tomtom')) s[k] = v;
+  Object.assign(s, novy.s);
+  return { t: novy.t, s, zdroje: { ...(stary?.zdroje || {}), [zdroj]: novy.t } };
+}
+
 if (process.argv[1] && process.argv[1].endsWith('doprava_sber.mjs')) {
   const dir = process.argv[2] || 'data', url = process.argv[3] || 'https://hradeczive.cz/api/doprava';
   mkdirSync(dir, { recursive: true });
-  const f = join(dir, 'agg.json');
+  const f = join(dir, 'agg.json'), lf = join(dir, 'live.json');
   const agg = existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : { n: 0, s: {} };
-  let snimek;
-  if (process.env.HERE_API_KEY) {
-    if (!kvota(agg)) { console.log(`měsíční limit ${agg.kvota.n} dotazů na HERE dosažen, snímek se tento měsíc už nestahuje`); writeFileSync(f, JSON.stringify(agg)); process.exit(0); }
-    writeFileSync(f, JSON.stringify(agg));                          // dotaz se započítá i při selhání (HERE ho může účtovat)
-    const { nactiProvoz } = await import('./vercel_api/doprava.js');
-    snimek = await nactiProvoz(process.env.HERE_API_KEY);
-    writeFileSync(join(dir, 'live.json'), JSON.stringify(snimek));
-  } else {
+  let live = existsSync(lf) ? JSON.parse(readFileSync(lf, 'utf8')) : null;
+  const H = process.env.HERE_API_KEY, TT = process.env.TOMTOM_API_KEY, kdy = new Date();
+  // zdroje se střídají: TomTom při každém běhu (každých 10 min), HERE jen v první polovině každých 20 min (~1 700 dotazů měsíčně)
+  const hereTed = !!H && (process.env.ZDROJ_HERE === '1' || kdy.getUTCMinutes() % 20 < 10);
+  let hereSnimek = null;
+  if (hereTed) {
+    if (!kvota(agg)) console.log(`měsíční limit ${agg.kvota.n} dotazů na HERE dosažen, HERE se tento měsíc už nestahuje`);
+    else {
+      writeFileSync(f, JSON.stringify(agg));                          // dotaz se započítá i při selhání (HERE ho může účtovat)
+      const { nactiProvoz } = await import('./vercel_api/doprava.js');
+      try { hereSnimek = await nactiProvoz(H); live = slucLive(live, hereSnimek, 'here'); writeFileSync(lf, JSON.stringify(live)); }
+      catch (e) { console.error('HERE selhalo:', e.message); }
+    }
+  }
+  if (TT) {
+    const { nactiTomTom, dlazdice } = await import('./doprava_tomtom.mjs');
+    if (!kvotaDen(agg, dlazdice().length)) console.log('denní limit dlaždic TomTom dosažen');
+    else {
+      writeFileSync(f, JSON.stringify(agg));
+      try { live = slucLive(live, await nactiTomTom(TT), 'tomtom'); writeFileSync(lf, JSON.stringify(live)); }
+      catch (e) { console.error('TomTom selhal:', e.message); }
+    }
+  }
+  if (!H && !TT) {                                                    // bez klíčů (testy): snímek z veřejné funkce
     const r = await fetch(url, { headers: { 'user-agent': 'hradeczive-doprava-sber' }, signal: AbortSignal.timeout(30000) });
     if (!r.ok) { console.error('api/doprava odpovědělo', r.status); process.exit(1); }
-    snimek = await r.json();
+    hereSnimek = await r.json();
   }
-  const novy = pridej(agg, snimek);
-  if (!novy) writeFileSync(f, JSON.stringify(agg));
-  if (novy) {
-    writeFileSync(f, JSON.stringify(agg));
-    writeFileSync(join(dir, 'typicka.json'), JSON.stringify(typicka(agg)));
-  }
-  console.log(novy ? `snímek přidán, celkem ${agg.n}, úseků ${Object.keys(agg.s).length}, dotazů na HERE tento měsíc ${agg.kvota?.n ?? '?'}` : 'beze změny (stejný snímek jako minule)');
+  const novy = hereSnimek ? pridej(agg, hereSnimek) : false;          // do historie jen HERE (TomTom data se neukládají)
+  writeFileSync(f, JSON.stringify(agg));
+  if (novy) writeFileSync(join(dir, 'typicka.json'), JSON.stringify(typicka(agg)));
+  console.log(novy ? `HERE snímek přidán, celkem ${agg.n}, dotazů na HERE tento měsíc ${agg.kvota?.n ?? '?'}` : 'do historie nic nepřibylo', '| TomTom dlaždic dnes', agg.kvotaTT?.n ?? 0, '| úseků v live', Object.keys(live?.s || {}).length);
 }

@@ -3,7 +3,7 @@
 name: doprava-sber
 on:
   schedule:
-    - cron: '7,27,47 3-21 * * *'      # každých 20 min, 4–23 h (CET) / 5–24 h (CEST): ~1 710 dotazů na HERE měsíčně, kvóta zdarma je 2 500
+    - cron: '7,17,27,37,47,57 3-21 * * *'      # každých 10 min, 4–23 h (CET) / 5–24 h (CEST): TomTom při každém běhu (~56 dlaždic), HERE jen na :07 :27 :47 (~1 710 dotazů měsíčně, zdarma 2 500)
   workflow_dispatch:
 permissions:
   contents: write
@@ -26,10 +26,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Balíčky pro dlaždice TomTom
+        run: npm i --no-save --no-package-lock pbf@4.0.1 @mapbox/vector-tile@2.0.3
       - name: Snímek
         run: node skripty/doprava_sber.mjs data
         env:
           HERE_API_KEY: ${{ secrets.HERE_API_KEY }}
+          TOMTOM_API_KEY: ${{ secrets.TOMTOM_API_KEY }}
           DOPRAVA_MESICNI_LIMIT: '2000'
       - name: Uložit do větve doprava-data (jediný commit)
         run: |
