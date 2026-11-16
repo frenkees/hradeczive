@@ -43,6 +43,8 @@ try {
 // hlavičky: tiles.json a index se ověřují vždy, data s ?v= se smí cachovat
 writeFileSync(join(OUT, 'vercel.json'), JSON.stringify({
   cleanUrls: false,
+  // hlavní adresa je hradeczive.cz; .eu a www vedou sem (trvalé přesměrování, cesta se zachová)
+  redirects: ['www.hradeczive.cz', 'hradeczive.eu', 'www.hradeczive.eu'].map((h) => ({ source: '/(.*)', has: [{ type: 'host', value: h }], destination: 'https://hradeczive.cz/$1', permanent: true })),
   headers: [
     { source: '/(tiles.json|index.html|)', headers: [{ key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' }] },
     { source: '/(overlay|preview|stromy)/(.*)', headers: [{ key: 'Cache-Control', value: 'public, max-age=3600' }] },
