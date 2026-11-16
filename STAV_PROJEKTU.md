@@ -319,3 +319,9 @@ Z `adamklatovsky/izomapa` main (34 commitů od základu `d37658b`) sloučeno vý
 - **Záměrně vynecháno:** chodci a cyklisté (chodci chodí po silnici; nasadit později), památky #127 (kolize s našimi modely dominant, `pam_vrsek`), přejezdy přes sousední koleje #117 (máme vlastní `XC`/`xGeo`), „opravy pro nová města“ #128 (mění zdroj dat Overture), systém doplňků #132 (jen infrastruktura).
 - **Čeká:** nový `prep.py` + render dotčených čtverců (hřiště, vánoce, semafory v scéně), `assets/vanoce.json` pro vánoční strom a stánky na Velkém náměstí. Nasazení až po sebrání dalších vizuálních oprav.
 - Postup přenosu: `git cherry-pick -x` po jednom commitu upstreamu v dočasném worktree; další sloučení stejně, ne `git merge origin/main` (konflikty v `web/app.html`, `prep.py`, `render_ctverec.sh`).
+
+## Doprava z HERE (2026-11-16, kód hotový a vyzkoušený místně, nenasazeno)
+- Klíč HERE je v `api_here.txt` (v `.gitignore`), jen Traffic API v7 `/flow`; kvóta Traffic ~5 000 dotazů/měsíc zdarma (ověřit v účtu HERE).
+- Kód: `izomapa/nastroje/here_doprava.py`, `nahled_doprava.py`, `skripty/vercel_api/doprava.js`, `overlay.py` (přiřazení `h`), `web/app.html` (hustota, rychlost, vrstva „Zácpy“), příznak `doprava_here` v `mesto.json`. Pokyny v `izomapa/CLAUDE.md`.
+- **Čeká:** (1) sběr snímků `python nastroje/here_doprava.py snimek` každých 10–15 min (plánovač úloh), po ~2 týdnech `typicka` a nasazení `site/doprava_typicka.json` = typické špičky; (2) ve Vercelu nastavit `HERE_API_KEY` (`vercel env add`) a nasadit; (3) ověřit podmínky užití dat HERE pro veřejný web (ukládání a zobrazování odvozených dat).
+- Pozn.: HERE nedává počty aut; hustotu řídí `jamFactor` nad základem ze sčítání ŘSD. Jednorázové stažení neukáže, které ulice se ucpávají ve špičkách.
