@@ -53,3 +53,11 @@ writeFileSync(join(OUT, 'vercel.json'), JSON.stringify({
 }, null, 2));
 console.log(`nasazeni/vercel připraveno, přepsáno ${n} adres dlaždic na ${R2}`);
 if (!existsSync(join(OUT, 'index.html'))) { console.error('chybí index.html'); process.exit(1); }
+// Vercel Web Analytics (bez cookies, anonymní: návštěvy, země, odkud přišli, zařízení; zapíná se v projektu na Vercelu v záložce Analytics)
+{
+  const f = join(OUT, 'index.html'); let h = readFileSync(f, 'utf8');
+  if (!h.includes('/_vercel/insights/script.js')) {
+    h = h.replace('</head>', '<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>\n<script defer src="/_vercel/insights/script.js"></script>\n</head>');
+    writeFileSync(f, h); console.log('přidán skript Vercel Web Analytics');
+  }
+}
