@@ -103,6 +103,22 @@ Poslední celé překreslení a nasazení 2026-11-14 večer (mosty, podjezdy, z�
 - Náhledy před/po: `izomapa/preview/mosty/` (pred_/po_ soutok, hucak, aldis). Scény čtverců 0,0 a 0,1 jsou už připravené,
   překreslit je potřeba všechny čtverce (oprava mostů platí pro celé město).
 
+- **Obchody, rychlé občerstvení, čerpací stanice a nákupní centra** (2026-11-16, zatím NEvyrenderováno – čeká na celé překreslení):
+  - `izomapa/assets/znacky.json` = tabulka 47 značek (regulární výraz na název, barvy zdí/pásu/proužku, nápis písmem 3×5, logo, tvar vstupu, pylon).
+    Hook v `assets/custom_prep.py` (fáze `props`, vypnout `IZO_ZNACKY=0`) přiřadí místa z Overture places + názvy budov z OSM k budovám:
+    jediná značka = celá budova (zdi, plochá střecha, pás pod střechou, nápis/cedule na průčelí – když průčelí není z JZ vidět, i na viditelné stěně –,
+    vstup lidl/kaufland/sklo/stres/mcd/kfc, pylon u nejbližší silnice), víc značek v budově = pás a nápis jen na úseku stěny, v paneláku výloha v parteru,
+    hypermarket s pasáží = kotva celá + nájemci v parteru. Pumpy: největší stříška do 35 m (bílá, barevné čelo, ostrůvky se stojany), prodejna, pylon s cenami.
+    Nákupní centra (místo shopping_mall) a dominanty se nemění. Model `znacka` v `custom_models.js`; v noci cedule, M a čela stříšek svítí vlastní barvou
+    (`render.html`, solidMat: `aw.w = 1`).
+  - Nákupní centra jako dominanty s modelem `oc` (obecný: části/ovály, obklady fasád, cedule s nápisem, světlíky, plochy na střeše; `nahradit` srovná budovy
+    z dat uvnitř části): **Aupark** (skleněná rotunda, červenooranžový obklad, šedá fasáda s bílými lomenými čarami, nápisy AUPARK, kosočtverečné světlíky),
+    **Futurum** (cihlový parter, prosklený blok kina, nápis FUTURUM na modrobílém pásu, TESCO, CINESTAR, tmavá střecha Tesca, parkovací dům),
+    **Atrium** (terakotový kvádr s bílými pruhy a úzkými okny, svislé ATRIUM, parkoviště na střeše), **Orlice Park** (nový záznam: dřevěný parter, stříbrná patra,
+    vstupní kostka s nápisem, fotovoltaika). Předlohy `izomapa/landmarks_ref/oc_*` (Commons, ZDROJE.md), tvar z ortofota ČÚZK; výšky a barvy jsou odhad.
+  - Náhledy `izomapa/preview/znacky/` (po_s1c, po_brezhrad*, po_futurum, po_aupark, po_atrium, po_orlicepark, po_pumpy, noc_s1). Ověřit: Kaufland v budově
+    pojmenované Kaufland u 50.1993, 15.8357 (z OSM), bauMax u Orlice parku (zavřený, nekreslí se), Lidl/Tesco v OD Prior (dominanta, nekreslí se).
+
 ## Noční katalog kandidátů na dominanty
 
 `skripty/noc/noc_hlidac.py` (z `izohradec/`) spustí a hlídá `noc_katalog.py`: kandidáti z Wikidat v území mapy (1 406),
@@ -220,6 +236,12 @@ Doporučené pořadí: nahrávání na R2, přírůstkové `dzi`, měření fáz
 - [ ] **Pull request autorovi izomapy**: obecná volba `dalsi_zdroje` (build_html.py, web/app.html) a další obecné úpravy
       na větvi `hradec` v `izomapa/`.
 - [ ] Letadla (`functions/`) na Vercelu nefungují (vypnuto).
+- [ ] **Zastávky MHD na Riegrově náměstí**: opravit orientaci (natočení) zastávek (2026-11-16, od uživatele).
+- [ ] **Hotel Černigov v noci**: skrz budovu prosvítají okna budov v pozadí (noční okna se kreslí přes/skrz model) – opravit.
+- [ ] **Delší vlaky na nástupištích**: lokomotiva zastaví uprostřed nástupiště a vagony zůstanou mimo – souprava se má zarovnat podle délky nástupiště, aby celý vlak stál u hrany.
+- [ ] **Klikací pole na hlavním nádraží**: kliknutí otevře pop-up s odjezdy vlaků v příštích 60 min (z jízdních řádů). Pozor na zalamování řádků.
+- [ ] **Pop-up zastávky MHD**: čas se občas zalamuje i na desktopu, přestože je místa dost – opravit (nowrap, šířky sloupců).
+- [ ] **Mobil**: menší písmo a pop-up přes celý displej (karty MHD i nádraží).
 - [ ] Před zveřejněním fakt projít mapu a příběhy míst proti skutečnosti.
 
 ## Nápady a požadavky do budoucna (zadání uživatele 2026-11-13)
