@@ -312,3 +312,10 @@ Podrobný plán a postup: `PLAN_vlaky.md`.
 - **Přejezdy:** `nastroje/prejezdy_z_dat.py` (Overpass nefunguje) -> `assets/prejezdy.json` (v `.gitignore`); `prep.py` je přiřadí silnicím (34 ve městě); web: výstražník, červenobílá půlzávora (6 s po začátku výstrahy), auta čekají.
 - **Výluka HK – Jaroměř (1. 11. – 12. 12. 2026):** `nastroje/vyluka_nad.py` z `assets/vyluka_odjezdy.json` (přepsané z PDF ČD, 66 spojů ze stání F, dny z obrázkových značek = odhad) -> `build/gtfs_extra/`, `mhd.py` je čte; autobusy J, R, Z jedou jen do Plotiště (okraj mapy).
 - **Zbývá:** vlaky vzniklé v HK se objeví až při odjezdu; vlaky na Jaroměř jedou i za výluky (v JŘ jsou); živá poloha vlaků není (GRAPP a ČD nemají povolený strojový přístup); NAD příjezdy na stání J nejsou.
+
+## Sloučení upstreamu (2026-11-16, větev `hradec` v `izomapa`, zatím nepřerenderováno)
+Z `adamklatovsky/izomapa` main (34 commitů od základu `d37658b`) sloučeno výběrově, jen přidaná funkčnost:
+- **Převzato:** semafory (auta stojí na červenou; `nastroje/semafory.py` -> `assets/semafory.json`, spojeno s naším zastavováním u přejezdů), dětská a workoutová hřiště (`nastroje/hriste.py`), vánoční vrstva (`vanoce.sh`, `assets/vanoce.json` podle `priklady/vanoce.json`), popisky okolních obcí, oprava `povrchy.py`, odkaz na sousední mapu bez „tady jsi“, render jen změněných čtverců (`nastroje/otisk.py`, v `render_ctverec.sh` spojeno s našimi časy fází).
+- **Záměrně vynecháno:** chodci a cyklisté (chodci chodí po silnici; nasadit později), památky #127 (kolize s našimi modely dominant, `pam_vrsek`), přejezdy přes sousední koleje #117 (máme vlastní `XC`/`xGeo`), „opravy pro nová města“ #128 (mění zdroj dat Overture), systém doplňků #132 (jen infrastruktura).
+- **Čeká:** nový `prep.py` + render dotčených čtverců (hřiště, vánoce, semafory v scéně), `assets/vanoce.json` pro vánoční strom a stánky na Velkém náměstí. Nasazení až po sebrání dalších vizuálních oprav.
+- Postup přenosu: `git cherry-pick -x` po jednom commitu upstreamu v dočasném worktree; další sloučení stejně, ne `git merge origin/main` (konflikty v `web/app.html`, `prep.py`, `render_ctverec.sh`).
