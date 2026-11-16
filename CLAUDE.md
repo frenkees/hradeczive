@@ -15,7 +15,7 @@ Adaptovat open-source generátor `adamklatovsky/izomapa` (původně vytvořený 
 - **Celé město (pro finální render):**
   - `min_lat: 50.1750, max_lat: 50.2450`
   - `min_lon: 15.7850, max_lon: 15.8850`
-  - Mřížka izomapy: 16 čtverců i, j ∈ −1…2 kolem středu `50.20539, 15.83009` (lat, lon); `href` 233,3 m, `dno` −40 m. Střed ani `href` neměnit, jinak nesedí už vyrenderované čtverce.
+  - Mřížka izomapy: 25 čtverců i, j ∈ −2…2 (od 2026-11-16 rozšířeno o jižní řádek j = −2 a západní sloupec i = −2; původně i, j ∈ −1…2) kolem středu `50.20539, 15.83009` (lat, lon); `href` 233,3 m, `dno` −40 m. Střed ani `href` neměnit, jinak nesedí už vyrenderované čtverce.
 
 ## Umístění
 - Repo izomapa: `./izomapa/` (Python vždy `.venv/Scripts/python`, `PYTHONUTF8=1`, skripty v Git Bash).

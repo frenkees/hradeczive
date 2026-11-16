@@ -14,9 +14,16 @@ přístřešky zastávek otočené k silnici, svislé značky (~18,8 tis.). Nezb
 - **Vánoční náměstí** (později): stavět podle webu vanocevhradci a vlastních fotek uživatele (`assets/vanoce.json`, `vanoce.sh`).
 - **Dashboard** (`skripty/dashboard/server.py`): volání git/vercel/gh blikala okny konzole; opraveno `CREATE_NO_WINDOW`, tray je třeba po změně restartovat.
 
+## Rozšíření mapy 2026-11-16 (jižní řádek j = −2, západní sloupec i = −2)
+`skripty/rozsirit_mapu.sh` (z kořene repa): stáhne Overture, laser, les/pole, hřiště, RÚIAN, střechy, komíny, pruhy, přejezdy a data magistrátu pro celou novou plochu a pustí
+`postav.sh render` (renderuje jen čtverce se změněným otiskem scény). Záloha původních dat je v `izomapa/build/zaloha_rozsireni/`.
+Pozor: obnova vstupů přepsala i data ve starých čtvercích (OSM hřiště, komíny, střechy z ortofota…), proto se při tomto běhu překreslily skoro všechny;
+další běh už přeskakuje (`beze změny`). Render spadl jednou na přechodném `ERR_CONNECTION_RESET` lokálního serveru, stačí pustit znovu.
+Nové čtverce nemají živou dopravu (HERE a TomTom `BBOX` jsou pořád jen původní město) ani semafory; MHD trasy a vlaky jedou i po nové ploše, jen kde jsou silnice.
+
 ## Co je hotové
 
-- **Celé město**: 16 čtverců 2,3 × 2,3 km (i, j ∈ −1…2 kolem 50.20539, 15.83009), 4 roční období + noc, MHD DPMHK podle jízdních řádů.
+- **Celé město**: 25 čtverců 2,3 × 2,3 km (i, j ∈ −2…2 kolem 50.20539, 15.83009; jižní řádek a západní sloupec přidány 2026-11-16, skript `skripty/rozsirit_mapu.sh`), 4 roční období + noc, MHD DPMHK podle jízdních řádů.
 - **Dominanty** (`izomapa/assets/dominanty.json` + `custom_models.js`): Bílá věž, katedrála sv. Ducha, Gymnázium J. K. Tyla,
   jez Hučák, Ulrichovo náměstí, Malšovická aréna.
 - **Data magistrátu** (geoportal.mmhk.cz) v celé mapě – viz níže.
