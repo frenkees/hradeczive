@@ -11,13 +11,26 @@ main{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1
 .bar{height:10px;background:var(--e);border-radius:5px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--blue)}
 ul{margin:0;padding-left:1.1em}li{margin:2px 0}small,.m{color:var(--m)}
 a.b{background:var(--p);border:1px solid var(--e);color:var(--ink);padding:5px 10px;border-radius:6px;text-decoration:none;display:inline-block;margin:2px 4px 2px 0}
-a.b:hover{border-color:var(--blue)}table{width:100%;border-collapse:collapse;font-size:.85rem}td,th{padding:2px 6px;text-align:left;border-bottom:1px solid var(--e)}
+a.b:hover,button.act:hover:not(:disabled){border-color:var(--blue)}button.act{background:var(--p);border:1px solid var(--e);color:var(--ink);padding:6px 12px;border-radius:6px;cursor:pointer;font:inherit;margin:2px 4px 2px 0}button.act:disabled{opacity:.45;cursor:not-allowed}pre.log{margin:8px 0 0;padding:6px 8px;background:var(--bg);border:1px solid var(--e);border-radius:6px;font-size:.75rem;white-space:pre-wrap;color:var(--m)}table{width:100%;border-collapse:collapse;font-size:.85rem}td,th{padding:2px 6px;text-align:left;border-bottom:1px solid var(--e)}
 </style></head><body>
 <header><h1>Hradec Živě – stav projektu</h1><span class="m" id="cas"></span></header>
 <main id="m"></main>
 <script>
 const E = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const pill = (t, c) => `<span class="pill ${c}">${E(t)}</span>`, min = (s) => (s == null ? '?' : Math.max(1, Math.round(s / 60)) + ' min');
+const TOKEN = '__TOKEN__';
+function akceHtml(a) {
+  const b = (id, t, ok) => `<button class="act" data-a="${id}" ${ok ? '' : 'disabled'}>${t}</button>`;
+  const stt = (x) => (x.stav === 'bezi' ? pill('běží ' + min(x.od), 'blue') : x.stav === 'ok' ? pill('doběhlo', 'ok') : x.stav === 'chyba' ? pill('chyba', 'bad') : '');
+  let t = b('render', 'Přerenderovat vše (~25 min)', a.lze_renderovat) + ' ' + stt(a.render) + '<br>';
+  if (a.lze_nasadit) t += b('nasadit', 'Nasadit změny na web', true) + '<br><small class="m">Dlaždice na R2 a produkční nasazení na Vercelu.</small>';
+  else if (a.nasadit.stav === 'bezi') t += stt(a.nasadit) + ' <small class="m">nasazuji…</small>';
+  else if (a.nasazeno_aktualni) t += pill('web je aktuální', 'ok');
+  else t += '<small class="m">Tlačítko pro nasazení se objeví po dokončeném renderu.</small>';
+  if (a.nasadit.stav === 'chyba') t += '<br>' + pill('nasazení selhalo', 'bad');
+  if (a.nasadit_log && a.nasadit.stav !== 'nic') t += `<pre class="log">${E(a.nasadit_log)}</pre>`;
+  return t;
+}
 function draw(s) {
   const r = s.render, n = r.hotovo.length, p = Math.round(100 * n / r.celkem);
   const st = { bezi: ['běží', 'blue'], hotovo: ['hotovo', 'ok'], chyba: ['chyba', 'bad'], stoji: ['neběží', 'gray'], nic: ['bez logu', 'gray'] }[r.stav] || ['?', 'gray'];
@@ -34,8 +47,18 @@ function draw(s) {
  <section class="card">${g(s.git.izomapa, 'Git – izomapa')}</section>
  <section class="card">${g(s.git.koren, 'Git – kořen')}</section>
  <section class="card"><h2>Čeká na překreslení (${(s.fronta.polozky || []).length})</h2><ul>${(s.fronta.polozky || []).slice(0, 8).map((x) => `<li>${E(x)}</li>`).join('')}</ul></section>
+ <section class="card"><h2>Akce</h2>${akceHtml(s.akce)}</section>
  <section class="card"><h2>Otevřít</h2><a class="b" href="#" data-o="mapa">Živá mapa</a><a class="b" href="#" data-o="mapa-lokalne">Lokální mapa</a><a class="b" href="#" data-o="slozka">Složka projektu</a><a class="b" href="#" data-o="stav">STAV_PROJEKTU</a><a class="b" href="#" data-o="log">Log renderu</a></section>`;
   document.getElementById('cas').textContent = 'aktualizováno ' + s.cas;
+  document.querySelectorAll('button.act').forEach((bt) => {
+    bt.onclick = async () => {
+      const txt = { render: 'Spustit plné překreslení všech čtverců (asi 25 minut, zatíží počítač)?', nasadit: 'Nasadit na ŽIVÝ web hradeczive.cz (nahrát dlaždice a produkční nasazení)?' }[bt.dataset.a];
+      if (!confirm(txt)) return;
+      const r = await fetch('/akce/' + bt.dataset.a, { method: 'POST', headers: { 'x-token': TOKEN } }); const d = await r.json().catch(() => ({}));
+      if (!d.ok) alert(d.msg || 'Nepovedlo se spustit.');
+      tick();
+    };
+  });
   document.querySelectorAll('[data-o]').forEach((a) => { a.onclick = (e) => { e.preventDefault(); fetch('/otevri/' + a.dataset.o); }; });
 }
 async function tick() { try { draw(await (await fetch('/api/stav')).json()); } catch { document.getElementById('cas').textContent = 'server neběží'; } }
