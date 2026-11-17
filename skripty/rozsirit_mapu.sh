@@ -11,7 +11,7 @@ krok "Overture (vrstvy se stahují znovu pro celou novou plochu, místa a část
 for l in building segment land_use water land_cover infrastructure land address; do rm -f data_all/$l.parquet; done
 rm -f data_all/division_area.parquet data/places.parquet
 python fetch_data.py --vse
-krok "laser ČÚZK (výšky budov)"; python dmp_fetch.py && python dmp_vysky.py
+krok "laser ČÚZK (výšky budov) a terén DMR 5G"; python dmp_fetch.py && python dmp_vysky.py && python nastroje/teren_dmr.py
 krok "les, pole"; python nastroje/les.py; python nastroje/zabaged.py && python nastroje/pole.py
 krok "hřiště, typy budov, barvy střech, zeleň na zpevněných plochách, hřebeny, komíny, pruhy, přejezdy"
 python nastroje/hriste.py || true; python nastroje/ruian.py || true; python nastroje/strechy.py || true; python nastroje/povrchy.py || true
