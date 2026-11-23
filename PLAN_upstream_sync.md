@@ -153,3 +153,11 @@ Návrh malých PR (pořadí podle snadnosti přijetí):
 
 Ne posílat (HK specifické): pasport magistrátu (`custom_prep.py`), dominanty a modely, Plachta, zápasy FC, terminál HD, výluka/NAD, analytika.
 **Odeslání PR i založení forku je navenek viditelný krok – jen po výslovném souhlasu uživatele.**
+
+## Stav kroku 4 (fork)
+
+- 2026-11-23: sken historie `hradec` i `--all` (názvy souborů + přidané řádky): žádné klíče/tokeny (`re_`, `ghp_`, `github_pat_`, `AKIA`, Blob), žádné soubory tomtomapi.txt/api_here.txt/restapikey.txt/*.env/wedos. Jen zmínky v kódu/dokumentaci a veřejný e-mail autora upstreamu.
+- Fork: https://github.com/frenkees/izomapa (isFork, parent adamklatovsky/izomapa). Remote `fork` v `izomapa/`.
+- `fork/main` = `origin/main` = 508b2a9 (zrcadlo upstreamu); `fork/hradec` = `hradec` = eab1675; tag `zaloha-pred-upstream-sync` nahrán.
+- `frenkees/hradeczive-izomapa` archivován (read-only).
+- Kořen: doplněn .gitignore, přidán `IZOMAPA_VERZE` (pin eab1675).

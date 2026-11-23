@@ -22,3 +22,10 @@ porovnani/
 api_here.txt
 tomtomapi.txt
 restapikey.txt
+
+# zdroje s nejasnou licencí, pracovní worktree
+_wt_*/
+*.pdf
+studie*.jpg
+studie_colored.png
+vanoceHKnamesti/
