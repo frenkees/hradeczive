@@ -2,7 +2,8 @@
 // Použití (z izohradec/):  node skripty/pripravit_vercel.mjs https://pub-xxxx.r2.dev
 // Pak:  cd nasazeni/vercel && vercel deploy --prod --yes
 import { cpSync, rmSync, readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const ROOT = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 const SITE = join(ROOT, 'izomapa', 'site');
@@ -31,7 +32,7 @@ const API = join(ROOT, 'skripty', 'vercel_api');
 if (existsSync(API)) {
   mkdirSync(join(OUT, 'api'), { recursive: true });
   for (const e of readdirSync(API)) if (e.endsWith('.js')) cpSync(join(API, e), join(OUT, 'api', e));
-  writeFileSync(join(OUT, 'package.json'), JSON.stringify({ private: true, type: 'module' }, null, 2));
+  writeFileSync(join(OUT, 'package.json'), JSON.stringify({ private: true, type: 'module', dependencies: { '@vercel/blob': '^2.0.0' } }, null, 2));
 }
 // statická záloha rozpisu zápasů (když funkce neodpoví)
 try {
@@ -60,4 +61,16 @@ if (!existsSync(join(OUT, 'index.html'))) { console.error('chybí index.html'); 
     h = h.replace('</head>', '<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>\n<script defer src="/_vercel/insights/script.js"></script>\n</head>');
     writeFileSync(f, h); console.log('přidán skript Vercel Web Analytics');
   }
+}
+// Umami (bez cookies): Website ID z env UMAMI_WEBSITE_ID nebo ze souboru skripty/umami_id.txt (ID není tajné, je vidět v HTML)
+// Self-host: nastavit i UMAMI_SRC (např. https://umami.example.cz/script.js); výchozí je Umami Cloud
+{
+  const idFile = join(dirname(fileURLToPath(import.meta.url)), 'umami_id.txt');
+  const id = (process.env.UMAMI_WEBSITE_ID || (existsSync(idFile) ? readFileSync(idFile, 'utf8') : '')).trim();
+  const src = process.env.UMAMI_SRC || 'https://cloud.umami.is/script.js';
+  const f = join(OUT, 'index.html'); let h = readFileSync(f, 'utf8');
+  if (id && !h.includes('data-website-id')) {
+    h = h.replace('</head>', `<script defer src="${src}" data-website-id="${id}"></script>\n</head>`);
+    writeFileSync(f, h); console.log('přidán skript Umami');
+  } else if (!id) console.log('Umami přeskočeno (chybí UMAMI_WEBSITE_ID / skripty/umami_id.txt)');
 }
