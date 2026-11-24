@@ -358,3 +358,16 @@ Obě HK funkce z `hradec:assets/custom_web.js` a `hradec:web/app.html` přepsán
 - Dráhy a odstavná plocha se promítnou do dlaždic až po renderu čtverců (nespuštěno). Provoz letadel stačí overlay.
 - Ověřeno: `plugins.load_and_run_plugins` nad kopií s letiste.json vrací data i kopíruje letiste.js, `tests.test_plugins_core` OK, `node tests/test-plugins.mjs` OK, `node --check letiste.js`. Headless Chromium nespuštěn (bez dlaždic bez přínosu).
 - Pozor: doplněk popis mapy sám neoznačuje jako ilustrační (jen text v manifest.json, který se nikde nezobrazuje). Označení je potřeba dopsat ručně, např. do `dalsi_zdroje`/popisu v `mesto.json` (nesahal jsem).
+
+## Fronta PR autorovi (stav 2026-11-24)
+Postup na jeden PR: `git worktree add ../_wt_prN -b pr/<téma> origin/main`, převzít jen potřebný diff z `hradec` (`git diff origin/main hradec -- <soubory>`), pytest/node test, push do `fork`, `gh pr create --repo adamklatovsky/izomapa --head frenkees:pr/<téma>`. Souhlas uživatele je dán po jednom PR; další posílat po jednom, nejdřív zkontrolovat reakci na předchozí.
+- [x] **#162** render.mjs: porty blokované Chromiem (poslán 2026-11-24; Windows skripty `.venv/Scripts`/`PYTHONUTF8` upstream už má)
+- [ ] 2. `dalsi_zdroje` v `mesto.json` (patička), sloučit s upstream `*_ZDROJ`
+- [ ] 3. `upresneni.json` `b`: ruční `h` před laserem DMP (+ `fl`, `cls`, `name`) + test `tests/test_upresneni_b.py`
+- [ ] 4. `novy_mesto.py --bbox --stred`
+- [ ] 5. Jednosměrky a kruhové objezdy v `road_route.py` + test
+- [ ] 6. Přístřešky zastávek z vozovky na chodník (prep.py)
+- [ ] 7. Časy fází v `render_par.log`
+- [ ] 8. Terén DMR 5G (`nastroje/teren_dmr.py`, volitelné)
+- [ ] 9. Issue/nápad (ne kód): extension pointy doplňků (`getUiSlot('karta')`, `onBuildingClick`, `addTileLayer`, hook hustoty aut)
+- [ ] 10. Nápady s ukázkou: přejezdy se závorami, semafory, svislé značky, 3D koleje, mosty/podjezdy, HERE/TomTom doprava, formulář hlášení s fotkou
