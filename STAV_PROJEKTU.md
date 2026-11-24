@@ -147,3 +147,11 @@ Ověřit podmínky HERE (veřejný web, ukládání odvozených dat, uvedení zd
 - Blob store `hradeczive-hlaseni-2` je propojen s projektem (BLOB_READ_WRITE_TOKEN); prázdný duplicitní `hradeczive-hlaseni` lze smazat v dashboardu. Volitelně nastavit Resend; `pripravit_vercel.mjs` už přidává závislost `@vercel/blob`.
 - Čtverce 0,1 (#6), -1,1 (#43), -1,0 (#5) překresleny a nasazeny 2026-11-20.
 - Čtverec 0,1 znovu 2026-11-22 (#54, #55 Kyjevská). Fotky z hlášení: `node skripty/hlaseni_soukrome.mjs foto <č>` (potřebuje `@vercel/blob` a token z `vercel env pull`).
+
+## Sync s upstreamem a doplňky (2026-11-24, nasazeno na ostro)
+- `izomapa/` je fork `frenkees/izomapa` (větev `hradec`, remote `fork`; `origin` = autor `adamklatovsky/izomapa`, `zaloha` = záloha). Aktuální verze je v `IZOMAPA_VERZE`.
+- Upstream se sleduje pravidelným `git merge origin/main` (už ne cherry-pick). Naše věci jsou doplňky v `izomapa/doplnky/<id>/` (hlaseni, hk_zapasy, odjezdova_tabule, doprava_here, letiste), konfigurace v `assets/doplnky/<id>.json` (gitignorováno, `git add -f`), HK specifika v `assets/custom_prep.py`. Web se skládá z `web/app.html` + `web/css` + `web/js/NN-*.js` (`web/sestav.py`).
+- Přijato od autora: chodci a cyklisté (zapnuti), pole, parkoviště, letiště (ilustrační provoz, uvedeno v patičce). Celá mapa (25 čtverců) přerenderována.
+- Dlaždice jsou v R2 pod prefixem `test/` (produkce na ně míří: `pripravit_vercel.mjs <r2 url>/test`); původní `tiles/` zůstaly pro rollback. Upload: `nahrat_dlazdice_r2.mjs <bucket> --prefix test`.
+- Podrobnosti: `PLAN_upstream_sync.md`. Pozor: preview deploye jsou za přihlášením a na nich mapa trhala, ostrá je plynulá.
+- Čeká: PR autorovi (jen se souhlasem uživatele, malé, po tématech), smazat prázdný Blob store `hradeczive-hlaseni`, rotovat Resend klíč.

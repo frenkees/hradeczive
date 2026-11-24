@@ -15,18 +15,19 @@ const IZOMAPA = join(ROOT, 'izomapa');
 const SITE = join(IZOMAPA, 'site');
 const WRANGLER = join(IZOMAPA, 'node_modules', 'wrangler', 'bin', 'wrangler.js');
 const args = process.argv.slice(2);
-const BUCKET = args.find((a, i) => !a.startsWith('--') && args[i - 1] !== '--paralelne');
+const BUCKET = args.find((a, i) => !a.startsWith('--') && args[i - 1] !== '--paralelne' && args[i - 1] !== '--prefix');
 const PAR = +(args[args.indexOf('--paralelne') + 1] || 0) || 16;
 const DRY = args.includes('--dry-run');
+const PREFIX = (args[args.indexOf('--prefix') + 1] && args.includes('--prefix')) ? args[args.indexOf('--prefix') + 1].replace(/^\/+|\/+$/g, '') + '/' : '';   // např. --prefix test: dlaždice pod test/tiles/…, produkce zůstává nedotčená
 if (!BUCKET) { console.error('chybí název bucketu'); process.exit(1); }
 
 const walk = (d) => readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]);
 const files = walk(join(SITE, 'tiles'));
 mkdirSync(join(ROOT, 'nasazeni'), { recursive: true });
-const MAN = join(ROOT, 'nasazeni', `r2_manifest_${BUCKET}.json`);
+const MAN = join(ROOT, 'nasazeni', `r2_manifest_${BUCKET}${PREFIX ? '_' + PREFIX.replace(/\W+/g, '') : ''}.json`);
 const man = existsSync(MAN) ? JSON.parse(readFileSync(MAN, 'utf8')) : {};
 const sha = (f) => createHash('sha256').update(readFileSync(f)).digest('hex').slice(0, 32);
-const todo = files.map((f) => { const s = statSync(f); return { f, key: relative(SITE, f).split(sep).join('/'), old: `${s.size}:${Math.floor(s.mtimeMs)}`, size: s.size }; })
+const todo = files.map((f) => { const s = statSync(f); return { f, key: PREFIX + relative(SITE, f).split(sep).join('/'), old: `${s.size}:${Math.floor(s.mtimeMs)}`, size: s.size }; })
   .filter((x) => {
     const m = man[x.key];
     if (m === x.old) { man[x.key] = x.hash = sha(x.f); return false; }          // starý záznam, soubor beze změny -> jen převést na hash

@@ -2,7 +2,7 @@
 
 Spouštět z izomapa/:  PYTHONUTF8=1 .venv/Scripts/python ../skripty/opravy_hlaseni.py [--vypis lat lon poloměr]
 Budova se najde podle bodu z hlášení (nejbližší do 15 m, jinak vyjmenované výběry). Klíče opravy čte prep.py:
-  name, cls_cz (zobrazený druh), cls (třída pro pravidla), fl (podlaží), h (výška), r (střecha), wc/rc (barvy), sachta (výtahová šachta), skryt (zaniklá budova).
+  name, cls_cz (zobrazený druh), cls (třída pro pravidla), fl (podlaží), h (výška), r (střecha), wc/rc (barvy), sachta (výtahová šachta), skryt (zaniklá budova; zapíše se do "skryt_budovy").
 Názvy a popisy podle návštěvníků jsou NEOVĚŘENÉ (viz poznámky v issues).
 """
 import glob, json, math, sys
@@ -61,6 +61,12 @@ UP = json.load(open('assets/upresneni.json', encoding='utf-8')); UB = UP.setdefa
 
 
 def nastav(issue, ids, **kv):
+    if kv.pop('skryt', False):                       # upstream klíč "skryt_budovy" (seznam id) místo naší "skryt" v "b"
+        SK = UP.setdefault('skryt_budovy', [])
+        for bid in ids:
+            if bid not in SK: SK.append(bid)
+            if not kv: UB.pop(bid, None)
+        if not kv: return
     for bid in ids:
         UB[bid] = {**UB.get(bid, {}), **kv, 'hl': issue}
 
