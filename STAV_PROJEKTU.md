@@ -155,3 +155,8 @@ Ověřit podmínky HERE (veřejný web, ukládání odvozených dat, uvedení zd
 - Dlaždice jsou v R2 pod prefixem `test/` (produkce na ně míří: `pripravit_vercel.mjs <r2 url>/test`); původní `tiles/` zůstaly pro rollback. Upload: `nahrat_dlazdice_r2.mjs <bucket> --prefix test`.
 - Podrobnosti: `PLAN_upstream_sync.md`. Pozor: preview deploye jsou za přihlášením a na nich mapa trhala, ostrá je plynulá.
 - Čeká: PR autorovi (jen se souhlasem uživatele, malé, po tématech), smazat prázdný Blob store `hradeczive-hlaseni`, rotovat Resend klíč.
+
+## MHD živě a oprava mostů (2026-11-24, hotovo lokálně, čeká na večerní přerender a nasazení)
+- Doplněk `izomapa/doplnky/mhd_live/` + Vercel funkce `skripty/vercel_api/mhd_live.js` (zdroj `dpmhk.qrbus.me/index/getAllRtdVehicles`, záloha `mapa.fcen.cz/api/vehicle_data`; jména řidičů a ostatní údaje se zahazují na serveru). Klient páruje vozidlo se spojem jízdního řádu (linka + poloha + směr při hlášeném zpoždění, doladění ±90 s) a spoj vykreslí na trase o zpoždění zpět (`Izomapa.setMhdDelayHook`, změna max 15 s/s). Přepínač „Všechny spoje MHD“ ve Vrstvách: pixelové špendlíky s číslem linky na odzoomované mapě (zelený včas, žlutý 1 min, oranžový 2 min, červený 3+ min, šedý bez živých dat). Konfigurace `assets/doplnky/mhd_live.json` (`git add -f`). Zdroj uveden v patičce.
+- Mosty: pilíře se nestaví nad cestou pod mostovkou (`prep.py` `no_pier`, `render.html`; hlášení #51).
+- Noc: `skripty/noc/noc_objekt.py` (podklady k jedné dominantě přes Ollamu), úloha Plánovače `izohradec_kostel_qwen` (kostel Božského Srdce Páně, #52, výstup `landmarks_ref/bozske_srdce_pane/info.md`) a `izohradec_rerender` (19:00, `build/rerender_all.sh`). Po přerenderu: prohlédnout, nasadit (testovací deploy, pak ostrý).
