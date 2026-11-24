@@ -33,3 +33,23 @@ Adaptovat open-source generátor `adamklatovsky/izomapa` (původně vytvořený 
 
 ## Stav projektu
 Aktuální stav, postup stavby a nasazení a otevřené úkoly: `./STAV_PROJEKTU.md` (na začátku session přečíst, po větších změnách aktualizovat).
+
+## Graphify (znalostní graf kódu a dokumentů)
+Graf je v `graphify-out/` (`GRAPH_REPORT.md`, `graph.json`, `graph.html`). Kód se aktualizuje sám (git hooky v kořenu + denní úloha `izohradec_graphify` 18:30, bez LLM); dokumenty `*.md` jen ručně `/graphify --update`.
+
+**Volat (`graphify query/path/explain`), když:**
+- otázka přesahuje víc souborů nebo vrstev: tok dat pipeline (prep.py → render → dzi → overlay/build_html), kdo používá `window.Izomapa` API a doplňky, co se rozbije změnou `mesto.json`/`scene.json`, kudy teče MHD nebo letadla od API po kartu;
+- začínám v neznámé části (nové téma, onboarding, „kde se to děje“) a nevím, který soubor hledat;
+- plánuju refaktor nebo PR autorovi a potřebuju dopad změny (co na čem závisí);
+- uživatel se ptá na architekturu nebo souvislosti; při `/graphify` vždy.
+
+**Nevolat, když:**
+- je to jedna známá funkce, soubor nebo řetězec: stačí `Grep`/`Read` (rychlejší a vždy aktuální);
+- opravuju konkrétní chybu v jednom místě, ladím CSS/JS detail nebo píšu malou úpravu;
+- jde o stav z dneška: graf může zaostávat za necommitnutými změnami, ověřit ve zdroji;
+- jde o čísla, texty nebo konfiguraci (hodnoty `mesto.json`, ceny, ID): číst přímo.
+
+**Pravidla:**
+- Odpověď z grafu před úpravou kódu vždy ověřit v samotném souboru (graf je mapa, ne pravda); INFERRED hrany brát jen jako nápovědu.
+- Plné `/graphify` (přestavba) nebo `--update` s dokumenty stojí tokeny: spouštět jen po větších změnách dokumentace, ne po každé úpravě; kód řeší hooky.
+- `graphify-out/` necommitovat do upstreamu (PR autorovi) ani nenahrávat na R2/Vercel.
