@@ -123,7 +123,6 @@ Značky: **[A]** lze svěřit podagentovi (levnější model u mechanické prác
 | 10 | Celé překreslení 25 čtverců (`./postav.sh render`), plachta, vánoce, `dzi` | ~1 h strojově | `render_par.log` bez CHYBA | [A] |
 | 11 | Ověřit `pripravit_vercel.mjs`/`nahrat_dlazdice_r2.mjs` s verzemi po čtvercích; nahrát do R2; deploy **preview**; test bodu 5 | 2 h + upload | vše z „Co otestovat“ OK na preview | [A] + [U] klikne formulář |
 | 12 | Produkce (`vercel deploy --prod`), `hradec` ← `sync/…` (ff), push do forku, archivace `hradeczive-izomapa` | 20 min | hradeczive běží, fork aktuální | [U] potvrzení |
-| 13 | PR do upstreamu (malé, viz 7) – připravit větve `pr/*` z `main` | průběžně | větve připravené, popis, test, ukázka | [A] příprava, **[U] odeslání** |
 | 14 | Režim údržby: týdně `git fetch origin && merge origin/main` ve worktree, testy, náhled 0,0; zapsat do STAV_PROJEKTU.md, upravit pravidlo „cherry-pick po jednom“ | 1 h/týden | zapsaný postup, první týdenní merge proběhl | [A] |
 
 Kroky 1–2 a 5 lze hned. 6–8 jsou na sobě závislé. 13 může běžet souběžně od kroku 5.
@@ -139,17 +138,7 @@ Kroky 1–2 a 5 lze hned. 6–8 jsou na sobě závislé. 13 může běžet soub�
 
 Styl upstreamu: PR z tematické větve (`kasparek-net/pr/…`, `MichalSkoula/…`), jeden námět na PR, název česky ve větě („Oprava: …“, „Zatrubněné potoky přerušovanou čarou“), malý diff, dokumentace v `CLAUDE.md` (odrážka „volitelné“ + klíč v `mesto.json`/`upresneni.json`), ukázka v `priklady/`, test v `tests/` (pytest `test_*.py`, node `test-*.mjs`), výchozí chování beze změny (nové věci vypnuté, nebo neovlivní jiná města). Kód pro město nepatří do `prep.py`/`render.html` (pravidlo upstream CLAUDE.md).
 
-Návrh malých PR (pořadí podle snadnosti přijetí):
-1. **Windows opravy** (`render.mjs` blokované porty, `PYTHONUTF8`, `.venv/Scripts`) – malé, jasné.
-2. **`dalsi_zdroje` v `mesto.json`** (patička) – sloučit s upstream `*_ZDROJ` náhradami.
-3. **`upresneni.json` `b`: ruční `h` přednost před laserem DMP, `fl`, `cls`, `name`** + test (`tests/test_upresneni_b.py`).
-4. **`novy_mesto.py --bbox --stred`** (mapa z obdélníku).
-5. **Jednosměrky a kruhové objezdy v `road_route.py`** (trasy MHD bez shapes.txt) + test.
-6. **Přístřešky zastávek z vozovky na chodník** (prep.py, malé).
-7. **Časy fází v `render_par.log`** (render_ctverec.sh).
-8. **Terén DMR 5G** (`nastroje/teren_dmr.py`, volitelné, jen ČR) – větší, s dokumentací.
-9. **Extension pointy doplňků:** `getUiSlot('karta')` / `onBuildingClick`, `addTileLayer`, hook hustoty aut – nejdřív jako issue/nápad, ne kód.
-10. Větší (spíš nápad + ukázka): přejezdy se závorami a výstražníky, semafory se světly, svislé značky z dat, 3D koleje a modely souprav, mosty/zářezy/podjezdy, silnice ve výstavbě + `prestavby.json`, doprava HERE/TomTom jako doplněk, formulář hlášení s fotkou (Vercel Blob/Resend vs. jejich Cloudflare).
+Odesláno a sloučeno: PR #162–#167 (2026-11-25); #172 `dalsi_zdroje` čeká na posouzení. **Další PR se zatím neposílají (rozhodnutí uživatele 2026-11-26)**, dřívější seznam kandidátů je odstraněn.
 
 Ne posílat (HK specifické): pasport magistrátu (`custom_prep.py`), dominanty a modely, Plachta, zápasy FC, terminál HD, výluka/NAD, analytika.
 **Odeslání PR i založení forku je navenek viditelný krok – jen po výslovném souhlasu uživatele.**
@@ -364,10 +353,10 @@ Postup na jeden PR: `git worktree add ../_wt_prN -b pr/<téma> origin/main`, př
 - [x] **#162** render.mjs: porty blokované Chromiem (poslán 2026-11-24; Windows skripty `.venv/Scripts`/`PYTHONUTF8` upstream už má)
 - [ ] 2. `dalsi_zdroje` v `mesto.json` (patička), sloučit s upstream `*_ZDROJ`
 - [ ] 3. `upresneni.json` `b`: ruční `h` před laserem DMP (+ `fl`, `cls`, `name`) + test `tests/test_upresneni_b.py`
-- [ ] 4. `novy_mesto.py --bbox --stred`
+- [x] 4. `novy_mesto.py --bbox --stred` (**#163**, 2026-11-24)
 - [ ] 5. Jednosměrky a kruhové objezdy v `road_route.py` + test
 - [ ] 6. Přístřešky zastávek z vozovky na chodník (prep.py)
-- [ ] 7. Časy fází v `render_par.log`
+- [x] 7. `render_par.sh`: vlákna dzi podle PAR (**PR 2026-11-24**; časy fází v logu zatím ne)
 - [ ] 8. Terén DMR 5G (`nastroje/teren_dmr.py`, volitelné)
 - [ ] 9. Issue/nápad (ne kód): extension pointy doplňků (`getUiSlot('karta')`, `onBuildingClick`, `addTileLayer`, hook hustoty aut)
 - [ ] 10. Nápady s ukázkou: přejezdy se závorami, semafory, svislé značky, 3D koleje, mosty/podjezdy, HERE/TomTom doprava, formulář hlášení s fotkou

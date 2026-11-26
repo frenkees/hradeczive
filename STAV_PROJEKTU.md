@@ -115,8 +115,6 @@ Ověřit podmínky HERE (veřejný web, ukládání odvozených dat, uvedení zd
 ## Otevřené úkoly
 - [ ] **Nové čtverce**: rozšířit `BBOX` dopravy (HERE, TomTom) a semafory na celou mapu 25 čtverců.
 - [ ] **Pasport místy zastaralý** (např. chybí kruhový objezd Komenského) – projít mapu proti ortofotu.
-- [ ] **Pull request autorovi izomapy**: `dalsi_zdroje`, jednosměrky v `road_route.py`, opravy mostů, silnice ve výstavbě, `IZOMAPA_PLUGINS`, opravy pro Windows.
-      Větev `hradec` míchá obecné opravy s městskými daty – rozdělit.
 - [ ] **Před zveřejněním** projít mapu a příběhy míst proti skutečnosti.
 - [ ] Ověřit na místě: délku a polohu schodů u lávky Aldis, rozměry estakády I/31, napárování dominant `spec` na správné budovy.
 - [ ] Vánoční náměstí (později): `assets/vanoce.json`, `vanoce.sh`, podle webu vanocevhradci a fotek uživatele.
@@ -154,7 +152,7 @@ Ověřit podmínky HERE (veřejný web, ukládání odvozených dat, uvedení zd
 - Přijato od autora: chodci a cyklisté (zapnuti), pole, parkoviště, letiště (ilustrační provoz, uvedeno v patičce). Celá mapa (25 čtverců) přerenderována.
 - Dlaždice jsou v R2 pod prefixem `test/` (produkce na ně míří: `pripravit_vercel.mjs <r2 url>/test`); původní `tiles/` zůstaly pro rollback. Upload: `nahrat_dlazdice_r2.mjs <bucket> --prefix test`.
 - Podrobnosti: `PLAN_upstream_sync.md`. Pozor: preview deploye jsou za přihlášením a na nich mapa trhala, ostrá je plynulá.
-- Čeká: další PR autorovi (po tématech, malé; uživatel 2026-11-26 odeslání schválil), smazat prázdný Blob store `hradeczive-hlaseni`, rotovat Resend klíč.
+- Čeká: smazat prázdný Blob store `hradeczive-hlaseni`, rotovat Resend klíč.
 
 ## MHD živě a oprava mostů (2026-11-24, hotovo lokálně, čeká na večerní přerender a nasazení)
 - Doplněk `izomapa/doplnky/mhd_live/` + Vercel funkce `skripty/vercel_api/mhd_live.js` (zdroj `dpmhk.qrbus.me/index/getAllRtdVehicles`, záloha `mapa.fcen.cz/api/vehicle_data`; jména řidičů a ostatní údaje se zahazují na serveru). Klient páruje vozidlo se spojem jízdního řádu (linka + poloha + směr při hlášeném zpoždění, doladění ±90 s) a spoj vykreslí na trase o zpoždění zpět (`Izomapa.setMhdDelayHook`, změna max 15 s/s). Přepínač „Všechny spoje MHD“ ve Vrstvách: pixelové špendlíky s číslem linky na odzoomované mapě (zelený včas, žlutý 1 min, oranžový 2 min, červený 3+ min, šedý bez živých dat). Konfigurace `assets/doplnky/mhd_live.json` (`git add -f`). Zdroj uveden v patičce.
@@ -179,5 +177,5 @@ Ověřit podmínky HERE (veřejný web, ukládání odvozených dat, uvedení zd
 - Autor přijal PR #162–#167 a přidal #168 (zrychlení kreslení, cache čísel linek, autobusy na silnici z GTFS; v HK bez účinku, GTFS DPMHK nemá `shapes.txt`) a větev `dotazy-za-sebe` (User-Agent, pravidlo v CLAUDE.md). Vše sloučeno do `hradec` (`0b50692`), `IZOMAPA_VERZE` = `0b50692`.
 - Při sloučení ponechán náš `87-letadla.js` (LZS, historie, karta); cache štítků `cisloLinky` doplněna o barvu trolejbusu (typ 11). Test `test_plugins_core` (node suite) selhává už před sloučením.
 - Web nasazen s `mhd.json` z čerstvého GTFS, dlaždice beze změny (R2 prefix `test/`).
-- Další PR autorovi: PR #172 `pr/dalsi-zdroje` (klíč `dalsi_zdroje` v patičce), odesláno 2026-11-26 po revizi Opusem. Záloha `zaloha` (hradeczive-izomapa) je na GitHubu archivovaná (jen čtení), push jde do `fork`.
+- PR #172 `pr/dalsi-zdroje` (klíč `dalsi_zdroje` v patičce), odesláno 2026-11-26 po revizi Opusem. Záloha `zaloha` (hradeczive-izomapa) je na GitHubu archivovaná (jen čtení), push jde do `fork`.
 
