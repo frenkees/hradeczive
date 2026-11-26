@@ -179,5 +179,5 @@ Ověřit podmínky HERE (veřejný web, ukládání odvozených dat, uvedení zd
 - Autor přijal PR #162–#167 a přidal #168 (zrychlení kreslení, cache čísel linek, autobusy na silnici z GTFS; v HK bez účinku, GTFS DPMHK nemá `shapes.txt`) a větev `dotazy-za-sebe` (User-Agent, pravidlo v CLAUDE.md). Vše sloučeno do `hradec` (`0b50692`), `IZOMAPA_VERZE` = `0b50692`.
 - Při sloučení ponechán náš `87-letadla.js` (LZS, historie, karta); cache štítků `cisloLinky` doplněna o barvu trolejbusu (typ 11). Test `test_plugins_core` (node suite) selhává už před sloučením.
 - Web nasazen s `mhd.json` z čerstvého GTFS, dlaždice beze změny (R2 prefix `test/`).
-- Další PR autorovi: větev `pr/dalsi-zdroje` (klíč `dalsi_zdroje` v patičce), po revizi Opusem. Záloha `zaloha` (hradeczive-izomapa) je na GitHubu archivovaná (jen čtení), push jde do `fork`.
+- Další PR autorovi: PR #172 `pr/dalsi-zdroje` (klíč `dalsi_zdroje` v patičce), odesláno 2026-11-26 po revizi Opusem. Záloha `zaloha` (hradeczive-izomapa) je na GitHubu archivovaná (jen čtení), push jde do `fork`.
 
