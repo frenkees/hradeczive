@@ -154,7 +154,7 @@ Ověřit podmínky HERE (veřejný web, ukládání odvozených dat, uvedení zd
 - Přijato od autora: chodci a cyklisté (zapnuti), pole, parkoviště, letiště (ilustrační provoz, uvedeno v patičce). Celá mapa (25 čtverců) přerenderována.
 - Dlaždice jsou v R2 pod prefixem `test/` (produkce na ně míří: `pripravit_vercel.mjs <r2 url>/test`); původní `tiles/` zůstaly pro rollback. Upload: `nahrat_dlazdice_r2.mjs <bucket> --prefix test`.
 - Podrobnosti: `PLAN_upstream_sync.md`. Pozor: preview deploye jsou za přihlášením a na nich mapa trhala, ostrá je plynulá.
-- Čeká: PR autorovi (jen se souhlasem uživatele, malé, po tématech), smazat prázdný Blob store `hradeczive-hlaseni`, rotovat Resend klíč.
+- Čeká: další PR autorovi (po tématech, malé; uživatel 2026-11-26 odeslání schválil), smazat prázdný Blob store `hradeczive-hlaseni`, rotovat Resend klíč.
 
 ## MHD živě a oprava mostů (2026-11-24, hotovo lokálně, čeká na večerní přerender a nasazení)
 - Doplněk `izomapa/doplnky/mhd_live/` + Vercel funkce `skripty/vercel_api/mhd_live.js` (zdroj `dpmhk.qrbus.me/index/getAllRtdVehicles`, záloha `mapa.fcen.cz/api/vehicle_data`; jména řidičů a ostatní údaje se zahazují na serveru). Klient páruje vozidlo se spojem jízdního řádu (linka + poloha + směr při hlášeném zpoždění, doladění ±90 s) a spoj vykreslí na trase o zpoždění zpět (`Izomapa.setMhdDelayHook`, změna max 15 s/s). Přepínač „Všechny spoje MHD“ ve Vrstvách: pixelové špendlíky s číslem linky na odzoomované mapě (zelený včas, žlutý 1 min, oranžový 2 min, červený 3+ min, šedý bez živých dat). Konfigurace `assets/doplnky/mhd_live.json` (`git add -f`). Zdroj uveden v patičce.
@@ -167,7 +167,7 @@ Ověřit podmínky HERE (veřejný web, ukládání odvozených dat, uvedení zd
 - Typ letadla z ICAO Doc 8643: `nastroje/letadla_typy.py` (obnova seznamu, výstup `web/js/87-letadla-typy.js`); ruční tabulka `AC_TABLE` má přednost, neznámý typ se odhadne podle kategorie ADS-B. Známá drobnost: u `EC35` vybere název „HE-26“.
 - `skripty/vercel_api/flights.js`: záloha adsb.fi, když adsb.lol selže (adsb.lol blokuje domácí IP uživatele, produkční Vercel funguje; airplanes.live a adsb.one vrací 403).
 - Web je nasazen (hradeczive.cz), `IZOMAPA_VERZE` = `3a983a3`.
-- **PR autorovi (adamklatovsky/izomapa), všechny otevřené, nikdo je zatím neposoudil:** #162 render a blokované porty, #163 `novy_mesto.py --bbox/--stred` (nálezy Codexu opraveny), #164 `render_par.sh` vlákna (nálezy opraveny), #165 databáze typů ICAO, #166 světla podle směru, #167 linka s kruhem (větve `pr/letadla-*` ve forku). Revize Opusem proběhla u #165–167. Pomocné worktrees ve scratchpadu smazat, až budou PR přijaty/zavřeny.
+- **PR autorovi (adamklatovsky/izomapa): #162–#167 sloučeny autorem 2026-11-25 a nasazeny na hradeczive.cz 2026-11-26** (render a porty, `novy_mesto.py --bbox/--stred`, vlákna `render_par.sh`, ICAO typy letadel, světla podle směru, linka s kruhem). Větve `pr/*` a pomocné worktrees ve scratchpadu lze smazat.
 - PR se špendlíky MHD (doplněk bez našeho API) se nedělá, uživatel zamítl.
 
 ## Světlo lamp a údržba silnic (2026-11-24, nasazeno)
@@ -179,4 +179,5 @@ Ověřit podmínky HERE (veřejný web, ukládání odvozených dat, uvedení zd
 - Autor přijal PR #162–#167 a přidal #168 (zrychlení kreslení, cache čísel linek, autobusy na silnici z GTFS; v HK bez účinku, GTFS DPMHK nemá `shapes.txt`) a větev `dotazy-za-sebe` (User-Agent, pravidlo v CLAUDE.md). Vše sloučeno do `hradec` (`0b50692`), `IZOMAPA_VERZE` = `0b50692`.
 - Při sloučení ponechán náš `87-letadla.js` (LZS, historie, karta); cache štítků `cisloLinky` doplněna o barvu trolejbusu (typ 11). Test `test_plugins_core` (node suite) selhává už před sloučením.
 - Web nasazen s `mhd.json` z čerstvého GTFS, dlaždice beze změny (R2 prefix `test/`).
+- Další PR autorovi: větev `pr/dalsi-zdroje` (klíč `dalsi_zdroje` v patičce), po revizi Opusem. Záloha `zaloha` (hradeczive-izomapa) je na GitHubu archivovaná (jen čtení), push jde do `fork`.
 
